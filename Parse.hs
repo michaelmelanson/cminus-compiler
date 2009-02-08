@@ -27,6 +27,6 @@ module Main where
 
     main = do args <- getArgs
               case getOpt RequireOrder options args of
-                ([Show],  [path], []) -> execParser path True
-                ([Check], [path], []) -> execParser path False
-                (_,       _,  msgs)   -> error $ concat msgs ++ usageInfo header options
+                ([Show],  [path], [])    -> execParser path True
+                ([Check], [path], [])    -> execParser path False
+                (_,       _,       msgs) -> error $ concat msgs ++ usageInfo header options
