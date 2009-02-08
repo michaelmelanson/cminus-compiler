@@ -1,0 +1,23 @@
+Name:           cmc
+Version:        0.1
+Cabal-Version:  >= 1.2
+License:        GPL
+Copyright:      (c) Michael Melanson 2009
+Synopsis:       Compiler for the C-Minus language
+Description:    cmc is a compiler for the C-Minus language. Includes IPPrint.
+Category:       Compiler
+
+
+Executable cm-test
+        Main-Is:        Tests.hs
+        Other-Modules:  Compiler.Parser
+        Build-Depends:  parsec >= 2.1,
+                        base
+
+
+Executable cm
+        Main-Is:        Parse.hs
+        Other-Modules:  Compiler.Parser, IPPrint
+        Build-Depends:  haskell98,
+                        haskell-src >= 1.0.1
+        GHC-Options:    -prof -auto-all

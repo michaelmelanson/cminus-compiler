@@ -1,0 +1,3 @@
+/* Global array variables must have a size */
+
+int a[];

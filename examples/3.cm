@@ -1,0 +1,8 @@
+/* Missing semicolon; note the helpful error message */
+
+int a
+
+void main(void)
+{
+
+}
