@@ -2,7 +2,6 @@ module Compiler.Parser where
     import Compiler.Scanner
 
     import Text.ParserCombinators.Parsec 
-    import Text.ParserCombinators.Parsec.Language
     import Text.ParserCombinators.Parsec.Expr hiding (Operator)
 
     data Variable   = Variable Type String
@@ -98,9 +97,9 @@ module Compiler.Parser where
             <|> expression_stmt
             <?> "statement"
 
-    expression_stmt = do { exp <- expression
+    expression_stmt = do { expr <- expression
                          ; semi
-                         ; return $ ExpressionStatement exp
+                         ; return $ ExpressionStatement expr
                          }
 
     compound_stmt = do { vars <- many var_declaration
