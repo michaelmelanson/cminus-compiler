@@ -1,7 +1,8 @@
 Name:           cmc
 Version:        0.1
 Cabal-Version:  >= 1.2
-License:        GPL
+License:        BSD4
+License-File:   LICENSE
 Copyright:      (c) Michael Melanson 2009
 Synopsis:       Compiler for the C-Minus language
 Description:    cmc is a compiler for the C-Minus language. Includes IPPrint.
