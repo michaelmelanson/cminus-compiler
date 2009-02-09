@@ -62,7 +62,7 @@ module Compiler.Parser where
                    | IterationStatement Expression Statement
 
                    -- |A return statement, with no return
-                   --  value. This is must be in a Void function.
+                   --  value.
                    | ReturnStatement
 
                    -- |A return statement with a return value.
