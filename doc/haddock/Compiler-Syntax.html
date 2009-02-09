@@ -1,0 +1,1255 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--Rendered using the Haskell Html Library v0.2-->
+<HTML
+><HEAD
+><META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8"
+><TITLE
+>Compiler.Syntax</TITLE
+><LINK HREF="haddock.css" REL="stylesheet" TYPE="text/css"
+><SCRIPT SRC="haddock-util.js" TYPE="text/javascript"
+></SCRIPT
+><SCRIPT TYPE="text/javascript"
+>window.onload = function () {setSynopsis("mini_Compiler-Syntax.html")};</SCRIPT
+></HEAD
+><BODY
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="topbar"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD
+><IMG SRC="haskell_icon.gif" WIDTH="16" HEIGHT="16" ALT=" "
+></TD
+><TD CLASS="title"
+>cmc-0.1: Compiler for the C-Minus language</TD
+><TD CLASS="topbut"
+><A HREF="index.html"
+>Contents</A
+></TD
+><TD CLASS="topbut"
+><A HREF="doc-index.html"
+>Index</A
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="modulebar"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD
+><FONT SIZE="6"
+>Compiler.Syntax</FONT
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="section1"
+>Description</TD
+></TR
+><TR
+><TD CLASS="doc"
+>The data structures used to represent the abstract syntax tree of a C-Minus file
+</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="section1"
+>Synopsis</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A HREF="#t%3AType"
+>Type</A
+>  </TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+>= <A HREF="#v%3AInt"
+>Int</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3AArray"
+>Array</A
+> <A HREF="Compiler-Syntax.html#t%3AType"
+>Type</A
+> Integer</TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3APointer"
+>Pointer</A
+> <A HREF="Compiler-Syntax.html#t%3AType"
+>Type</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3AVoid"
+>Void</A
+></TD
+></TR
+></TABLE
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A HREF="#t%3AVariable"
+>Variable</A
+>  = <A HREF="#v%3AVariable"
+>Variable</A
+> <A HREF="Compiler-Syntax.html#t%3AType"
+>Type</A
+> String</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A HREF="#t%3AValue"
+>Value</A
+>  </TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+>= <A HREF="#v%3AIntValue"
+>IntValue</A
+> Integer</TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3AVariableRef"
+>VariableRef</A
+> String</TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3AArrayRef"
+>ArrayRef</A
+> String <A HREF="Compiler-Syntax.html#t%3AExpression"
+>Expression</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3AFunctionCall"
+>FunctionCall</A
+> String [<A HREF="Compiler-Syntax.html#t%3AExpression"
+>Expression</A
+>]</TD
+></TR
+></TABLE
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A HREF="#t%3AOperator"
+>Operator</A
+>  </TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+>= <A HREF="#v%3AAdd"
+>Add</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3ASubtract"
+>Subtract</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3AMultiply"
+>Multiply</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3ADivide"
+>Divide</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3ALessOrEqual"
+>LessOrEqual</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3ALess"
+>Less</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3AGreaterOrEqual"
+>GreaterOrEqual</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3AGreater"
+>Greater</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3AEqual"
+>Equal</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3ANotEqual"
+>NotEqual</A
+></TD
+></TR
+></TABLE
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A HREF="#t%3AExpression"
+>Expression</A
+>  </TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+>= <A HREF="#v%3AAssignmentExpr"
+>AssignmentExpr</A
+> <A HREF="Compiler-Syntax.html#t%3AValue"
+>Value</A
+> <A HREF="Compiler-Syntax.html#t%3AExpression"
+>Expression</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3AArithmeticExpr"
+>ArithmeticExpr</A
+> <A HREF="Compiler-Syntax.html#t%3AOperator"
+>Operator</A
+> <A HREF="Compiler-Syntax.html#t%3AExpression"
+>Expression</A
+> <A HREF="Compiler-Syntax.html#t%3AExpression"
+>Expression</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3AValueExpr"
+>ValueExpr</A
+> <A HREF="Compiler-Syntax.html#t%3AValue"
+>Value</A
+></TD
+></TR
+></TABLE
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A HREF="#t%3AStatement"
+>Statement</A
+>  </TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+>= <A HREF="#v%3AExpressionStatement"
+>ExpressionStatement</A
+> <A HREF="Compiler-Syntax.html#t%3AExpression"
+>Expression</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3ACompoundStatement"
+>CompoundStatement</A
+> [<A HREF="Compiler-Syntax.html#t%3AVariable"
+>Variable</A
+>] [<A HREF="Compiler-Syntax.html#t%3AStatement"
+>Statement</A
+>]</TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3ASelectionStatement"
+>SelectionStatement</A
+> <A HREF="Compiler-Syntax.html#t%3AExpression"
+>Expression</A
+> <A HREF="Compiler-Syntax.html#t%3AStatement"
+>Statement</A
+> <A HREF="Compiler-Syntax.html#t%3AStatement"
+>Statement</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3AIterationStatement"
+>IterationStatement</A
+> <A HREF="Compiler-Syntax.html#t%3AExpression"
+>Expression</A
+> <A HREF="Compiler-Syntax.html#t%3AStatement"
+>Statement</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3AReturnStatement"
+>ReturnStatement</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3AValueReturnStatement"
+>ValueReturnStatement</A
+> <A HREF="Compiler-Syntax.html#t%3AExpression"
+>Expression</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3ANullStatement"
+>NullStatement</A
+></TD
+></TR
+></TABLE
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A HREF="#t%3AToplevel"
+>Toplevel</A
+>  </TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+>= <A HREF="#v%3AGlobalVariable"
+>GlobalVariable</A
+> <A HREF="Compiler-Syntax.html#t%3AVariable"
+>Variable</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3AFunction"
+>Function</A
+> <A HREF="Compiler-Syntax.html#t%3AType"
+>Type</A
+> String [<A HREF="Compiler-Syntax.html#t%3AVariable"
+>Variable</A
+>] <A HREF="Compiler-Syntax.html#t%3AStatement"
+>Statement</A
+></TD
+></TR
+></TABLE
+></TD
+></TR
+></TABLE
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="section1"
+>Documentation</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A NAME="t%3AType"
+></A
+><B
+>Type</B
+>  </TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="section4"
+>Constructors</TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="arg"
+><A NAME="v%3AInt"
+></A
+><B
+>Int</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v%3AArray"
+></A
+><B
+>Array</B
+> <A HREF="Compiler-Syntax.html#t%3AType"
+>Type</A
+> Integer</TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v%3APointer"
+></A
+><B
+>Pointer</B
+> <A HREF="Compiler-Syntax.html#t%3AType"
+>Type</A
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v%3AVoid"
+></A
+><B
+>Void</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="section4"
+><IMG SRC="minus.gif" CLASS="coll" ONCLICK="toggle(this,'i:Type')" ALT="show/hide"
+> Instances</TD
+></TR
+><TR
+><TD CLASS="body"
+><DIV ID="i:Type" STYLE="display:block;"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+>Eq <A HREF="Compiler-Syntax.html#t%3AType"
+>Type</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>Show <A HREF="Compiler-Syntax.html#t%3AType"
+>Type</A
+></TD
+></TR
+></TABLE
+></DIV
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A NAME="t%3AVariable"
+></A
+><B
+>Variable</B
+>  </TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="section4"
+>Constructors</TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="arg"
+><A NAME="v%3AVariable"
+></A
+><B
+>Variable</B
+> <A HREF="Compiler-Syntax.html#t%3AType"
+>Type</A
+> String</TD
+><TD CLASS="rdoc"
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="section4"
+><IMG SRC="minus.gif" CLASS="coll" ONCLICK="toggle(this,'i:Variable')" ALT="show/hide"
+> Instances</TD
+></TR
+><TR
+><TD CLASS="body"
+><DIV ID="i:Variable" STYLE="display:block;"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+>Eq <A HREF="Compiler-Syntax.html#t%3AVariable"
+>Variable</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>Show <A HREF="Compiler-Syntax.html#t%3AVariable"
+>Variable</A
+></TD
+></TR
+></TABLE
+></DIV
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A NAME="t%3AValue"
+></A
+><B
+>Value</B
+>  </TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="section4"
+>Constructors</TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="arg"
+><A NAME="v%3AIntValue"
+></A
+><B
+>IntValue</B
+> Integer</TD
+><TD CLASS="rdoc"
+>A literal integer value
+</TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v%3AVariableRef"
+></A
+><B
+>VariableRef</B
+> String</TD
+><TD CLASS="rdoc"
+>A reference to an integer variable
+</TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v%3AArrayRef"
+></A
+><B
+>ArrayRef</B
+> String <A HREF="Compiler-Syntax.html#t%3AExpression"
+>Expression</A
+></TD
+><TD CLASS="rdoc"
+>A reference to an index of an array
+</TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v%3AFunctionCall"
+></A
+><B
+>FunctionCall</B
+> String [<A HREF="Compiler-Syntax.html#t%3AExpression"
+>Expression</A
+>]</TD
+><TD CLASS="rdoc"
+>A function call
+</TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="section4"
+><IMG SRC="minus.gif" CLASS="coll" ONCLICK="toggle(this,'i:Value')" ALT="show/hide"
+> Instances</TD
+></TR
+><TR
+><TD CLASS="body"
+><DIV ID="i:Value" STYLE="display:block;"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+>Eq <A HREF="Compiler-Syntax.html#t%3AValue"
+>Value</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>Show <A HREF="Compiler-Syntax.html#t%3AValue"
+>Value</A
+></TD
+></TR
+></TABLE
+></DIV
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A NAME="t%3AOperator"
+></A
+><B
+>Operator</B
+>  </TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="ndoc"
+>A C-Minus operator. Each of these should be fairly self-explanatory
+</TD
+></TR
+><TR
+><TD CLASS="section4"
+>Constructors</TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="arg"
+><A NAME="v%3AAdd"
+></A
+><B
+>Add</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v%3ASubtract"
+></A
+><B
+>Subtract</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v%3AMultiply"
+></A
+><B
+>Multiply</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v%3ADivide"
+></A
+><B
+>Divide</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v%3ALessOrEqual"
+></A
+><B
+>LessOrEqual</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v%3ALess"
+></A
+><B
+>Less</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v%3AGreaterOrEqual"
+></A
+><B
+>GreaterOrEqual</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v%3AGreater"
+></A
+><B
+>Greater</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v%3AEqual"
+></A
+><B
+>Equal</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v%3ANotEqual"
+></A
+><B
+>NotEqual</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="section4"
+><IMG SRC="minus.gif" CLASS="coll" ONCLICK="toggle(this,'i:Operator')" ALT="show/hide"
+> Instances</TD
+></TR
+><TR
+><TD CLASS="body"
+><DIV ID="i:Operator" STYLE="display:block;"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+>Eq <A HREF="Compiler-Syntax.html#t%3AOperator"
+>Operator</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>Show <A HREF="Compiler-Syntax.html#t%3AOperator"
+>Operator</A
+></TD
+></TR
+></TABLE
+></DIV
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A NAME="t%3AExpression"
+></A
+><B
+>Expression</B
+>  </TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="section4"
+>Constructors</TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="arg"
+><A NAME="v%3AAssignmentExpr"
+></A
+><B
+>AssignmentExpr</B
+> <A HREF="Compiler-Syntax.html#t%3AValue"
+>Value</A
+> <A HREF="Compiler-Syntax.html#t%3AExpression"
+>Expression</A
+></TD
+><TD CLASS="rdoc"
+>Assignment of an expression to either a VariableRef or
+  an ArrayRef (the other constructors for Value are
+  never generated).
+</TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v%3AArithmeticExpr"
+></A
+><B
+>ArithmeticExpr</B
+> <A HREF="Compiler-Syntax.html#t%3AOperator"
+>Operator</A
+> <A HREF="Compiler-Syntax.html#t%3AExpression"
+>Expression</A
+> <A HREF="Compiler-Syntax.html#t%3AExpression"
+>Expression</A
+></TD
+><TD CLASS="rdoc"
+>An arithmetic expression
+</TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v%3AValueExpr"
+></A
+><B
+>ValueExpr</B
+> <A HREF="Compiler-Syntax.html#t%3AValue"
+>Value</A
+></TD
+><TD CLASS="rdoc"
+>A simple expression that evaluates to a value
+</TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="section4"
+><IMG SRC="minus.gif" CLASS="coll" ONCLICK="toggle(this,'i:Expression')" ALT="show/hide"
+> Instances</TD
+></TR
+><TR
+><TD CLASS="body"
+><DIV ID="i:Expression" STYLE="display:block;"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+>Eq <A HREF="Compiler-Syntax.html#t%3AExpression"
+>Expression</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>Show <A HREF="Compiler-Syntax.html#t%3AExpression"
+>Expression</A
+></TD
+></TR
+></TABLE
+></DIV
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A NAME="t%3AStatement"
+></A
+><B
+>Statement</B
+>  </TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="section4"
+>Constructors</TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="arg"
+><A NAME="v%3AExpressionStatement"
+></A
+><B
+>ExpressionStatement</B
+> <A HREF="Compiler-Syntax.html#t%3AExpression"
+>Expression</A
+></TD
+><TD CLASS="rdoc"
+>A statement that's also an expression (probably
+  an assignment, though not necessarily)
+</TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v%3ACompoundStatement"
+></A
+><B
+>CompoundStatement</B
+> [<A HREF="Compiler-Syntax.html#t%3AVariable"
+>Variable</A
+>] [<A HREF="Compiler-Syntax.html#t%3AStatement"
+>Statement</A
+>]</TD
+><TD CLASS="rdoc"
+>A code block. These define their own scope, so
+  they can have local variable declarations, as
+  well as a list of statements.
+</TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v%3ASelectionStatement"
+></A
+><B
+>SelectionStatement</B
+> <A HREF="Compiler-Syntax.html#t%3AExpression"
+>Expression</A
+> <A HREF="Compiler-Syntax.html#t%3AStatement"
+>Statement</A
+> <A HREF="Compiler-Syntax.html#t%3AStatement"
+>Statement</A
+></TD
+><TD CLASS="rdoc"
+>An if statement, with a then-clause and an
+  optional else clause. The else clause, if
+  non-existent, is represented by a NullStatement.
+</TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v%3AIterationStatement"
+></A
+><B
+>IterationStatement</B
+> <A HREF="Compiler-Syntax.html#t%3AExpression"
+>Expression</A
+> <A HREF="Compiler-Syntax.html#t%3AStatement"
+>Statement</A
+></TD
+><TD CLASS="rdoc"
+>A while statement, with a condition and a statement.
+</TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v%3AReturnStatement"
+></A
+><B
+>ReturnStatement</B
+></TD
+><TD CLASS="rdoc"
+>A return statement with no return value.
+</TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v%3AValueReturnStatement"
+></A
+><B
+>ValueReturnStatement</B
+> <A HREF="Compiler-Syntax.html#t%3AExpression"
+>Expression</A
+></TD
+><TD CLASS="rdoc"
+>A return statement with a return value.
+</TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v%3ANullStatement"
+></A
+><B
+>NullStatement</B
+></TD
+><TD CLASS="rdoc"
+>An empty statement. These are only generated
+  when an IterationStatement lacks an else-clause
+</TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="section4"
+><IMG SRC="minus.gif" CLASS="coll" ONCLICK="toggle(this,'i:Statement')" ALT="show/hide"
+> Instances</TD
+></TR
+><TR
+><TD CLASS="body"
+><DIV ID="i:Statement" STYLE="display:block;"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+>Eq <A HREF="Compiler-Syntax.html#t%3AStatement"
+>Statement</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>Show <A HREF="Compiler-Syntax.html#t%3AStatement"
+>Statement</A
+></TD
+></TR
+></TABLE
+></DIV
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A NAME="t%3AToplevel"
+></A
+><B
+>Toplevel</B
+>  </TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="section4"
+>Constructors</TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="arg"
+><A NAME="v%3AGlobalVariable"
+></A
+><B
+>GlobalVariable</B
+> <A HREF="Compiler-Syntax.html#t%3AVariable"
+>Variable</A
+></TD
+><TD CLASS="rdoc"
+>A global variable
+</TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v%3AFunction"
+></A
+><B
+>Function</B
+> <A HREF="Compiler-Syntax.html#t%3AType"
+>Type</A
+> String [<A HREF="Compiler-Syntax.html#t%3AVariable"
+>Variable</A
+>] <A HREF="Compiler-Syntax.html#t%3AStatement"
+>Statement</A
+></TD
+><TD CLASS="rdoc"
+>A function declaration
+</TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="section4"
+><IMG SRC="minus.gif" CLASS="coll" ONCLICK="toggle(this,'i:Toplevel')" ALT="show/hide"
+> Instances</TD
+></TR
+><TR
+><TD CLASS="body"
+><DIV ID="i:Toplevel" STYLE="display:block;"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+>Eq <A HREF="Compiler-Syntax.html#t%3AToplevel"
+>Toplevel</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>Show <A HREF="Compiler-Syntax.html#t%3AToplevel"
+>Toplevel</A
+></TD
+></TR
+></TABLE
+></DIV
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="botbar"
+>Produced by <A HREF="http://www.haskell.org/haddock/"
+>Haddock</A
+> version 2.4.1</TD
+></TR
+></TABLE
+></BODY
+></HTML
+>

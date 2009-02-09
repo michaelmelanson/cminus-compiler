@@ -8,19 +8,15 @@
 @package cmc
 @version 0.1
 
-module Compiler.Scanner
+
+-- | The data structures used to represent the abstract syntax tree of a
+--   C-Minus file
+module Compiler.Syntax
 data Type
 Int :: Type
 Array :: Type -> Integer -> Type
 Pointer :: Type -> Type
 Void :: Type
-instance Show Type
-instance Eq Type
-
-
--- | The parser for the C-Minus compiler. This converts the token stream
---   produced by Compiler.Scanner into an abstract syntax tree.
-module Compiler.Parser
 data Variable
 Variable :: Type -> String -> Variable
 data Value
@@ -105,3 +101,14 @@ instance Show Value
 instance Eq Value
 instance Show Variable
 instance Eq Variable
+instance Show Type
+instance Eq Type
+
+
+-- | Scanning rules for the C- language
+module Compiler.Scanner
+
+
+-- | The parser for the C-Minus compiler. This converts the token stream
+--   produced by Compiler.Scanner into an abstract syntax tree.
+module Compiler.Parser

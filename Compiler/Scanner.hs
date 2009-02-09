@@ -1,5 +1,4 @@
--- Scanning rules for the C- language
-
+-- |Scanning rules for the C- language
 module Compiler.Scanner where
     import Compiler.Syntax
 
