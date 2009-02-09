@@ -1,4 +1,8 @@
-/* Missing semicolon; note the helpful error message */
+/* -*- c -*-
+ 
+   Missing semicolon; note the helpful error message
+
+*/
 
 int a
 

@@ -41,14 +41,21 @@ module Main where
       [ToplevelFunc (Function Int "a" []
                      (CompoundStatement []
                       [ExpressionStatement
-                       (AssignmentExpr (ValueExpr (VariableRef "a"))
+                       (AssignmentExpr (VariableRef "a")
+                        (ValueExpr (VariableRef "x")))]))]),
+
+     ("int a(void) { a[1] = x; }",
+      [ToplevelFunc (Function Int "a" []
+                     (CompoundStatement []
+                      [ExpressionStatement
+                       (AssignmentExpr (ArrayRef "a" (ValueExpr (IntValue 1)))
                         (ValueExpr (VariableRef "x")))]))]),
 
      ("int a(void) { a = 2*x+1; }",
       [ToplevelFunc (Function Int "a" []
                      (CompoundStatement []
                       [ExpressionStatement
-                       (AssignmentExpr (ValueExpr (VariableRef "a"))
+                       (AssignmentExpr (VariableRef "a")
                         (ArithmeticExpr Add
                          (ArithmeticExpr Multiply
                           (ValueExpr (IntValue 2))
@@ -60,14 +67,15 @@ module Main where
       [ToplevelFunc (Function Int "a" []
                      (CompoundStatement []
                       [ExpressionStatement
-                       (AssignmentExpr (ValueExpr (VariableRef "a"))
+                       (AssignmentExpr (VariableRef "a")
                         (ValueExpr (ArrayRef "x" (ValueExpr (IntValue 0)))))]))]),
 
      ("int a(void) { int x; x = 0; }",
       [ToplevelFunc (Function Int "a" []
                      (CompoundStatement [Variable Int "x"]
                       [ExpressionStatement
-                       (AssignmentExpr (ValueExpr (VariableRef "x")) (ValueExpr (IntValue 0)))]))]),
+                       (AssignmentExpr (VariableRef "x")
+                        (ValueExpr (IntValue 0)))]))]),
 
      ("int a(void) { while(1) { } }",
       [ToplevelFunc (Function Int "a" []

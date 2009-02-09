@@ -8,6 +8,9 @@ Synopsis:       Compiler for the C-Minus language
 Description:    cmc is a compiler for the C-Minus language. Includes IPPrint.
 Category:       Compiler
 
+Library
+        Exposed-Modules: Compiler.Scanner,
+                         Compiler.Parser
 
 Executable cm-test
         Main-Is:        Tests.hs

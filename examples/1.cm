@@ -1,4 +1,10 @@
-/* -*- c -*- */
+/* -*- c -*-
+
+   This is the sorting example from the C-Minus language
+   specification. It demonstrates a significant, correct C-Minus
+   program.
+
+ */
 
 int x[10];
 

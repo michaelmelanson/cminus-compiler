@@ -7,7 +7,9 @@ module Main where
 
     import IPPrint
             
-    data Flag = Show | Check
+    -- |Command line flags
+    data Flag = Show  -- ^The syntax tree should be printed
+              | Check -- ^The code should only be checked for correctness
 
     header = "Usage: cm {-c|-a} file"
 

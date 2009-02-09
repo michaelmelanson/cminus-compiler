@@ -1,6 +1,9 @@
 /* -*- c -*-
 
-   A variable declared after a statement
+   Variables must be declared before any statements in that
+   block. This example demonstrates the error produced when this is
+   not the case.
+
  */
 
 void main(void)

@@ -1,3 +1,7 @@
-/* Global array variables must have a size */
+/* -*- c -*-
+
+   Global array variables must have a size
+ 
+ */
 
 int a[];
