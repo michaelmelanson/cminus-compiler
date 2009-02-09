@@ -1,6 +1,7 @@
 
 module Main where
 
+    import Compiler.Syntax
     import Compiler.Scanner
     import Compiler.Parser
 

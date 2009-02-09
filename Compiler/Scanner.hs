@@ -1,16 +1,11 @@
 -- Scanning rules for the C- language
 
 module Compiler.Scanner where
+    import Compiler.Syntax
+
     import Text.ParserCombinators.Parsec
     import Text.ParserCombinators.Parsec.Language
     import qualified Text.ParserCombinators.Parsec.Token as P
-
-    data Type = Int
-              | Array Type Integer
-              | Pointer Type
-              | Void
-                deriving (Show, Eq)
-
 
     cMinusStyle = emptyDef {
                          commentStart   = "/*"
