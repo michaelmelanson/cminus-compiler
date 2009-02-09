@@ -5,3 +5,4 @@
 *.hp
 *.ps
 dist/**
+.DS_Store
