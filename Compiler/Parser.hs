@@ -1,5 +1,5 @@
 -- |The parser for the C-Minus compiler. This converts the token
--- |stream produced by Compiler.Scanner into an abstract syntax tree.
+--  stream produced by Compiler.Scanner into an abstract syntax tree.
 
 module Compiler.Parser where
     import Compiler.Scanner
@@ -8,9 +8,6 @@ module Compiler.Parser where
     import Text.ParserCombinators.Parsec.Expr hiding (Operator)
 
     data Variable   = Variable Type String
-                      deriving (Show, Eq)
-
-    data Function   = Function Type String [Variable] Statement
                       deriving (Show, Eq)
 
     data Value      = IntValue Integer    -- ^A literal integer value
@@ -34,8 +31,8 @@ module Compiler.Parser where
 
     data Expression =
             -- |Assignment of an expression to either a VariableRef or
-            -- |an ArrayRef (the other constructors for Value are
-            -- |never generated).
+            --  an ArrayRef (the other constructors for Value are
+            --  never generated).
               AssignmentExpr Value Expression
 
             -- |An arithmetic expression
@@ -48,36 +45,36 @@ module Compiler.Parser where
 
     data Statement =
                    -- |A statement that's also an expression (probably
-                   -- |an assignment, though not necessarily)
+                   --  an assignment, though not necessarily)
                      ExpressionStatement Expression
 
                    -- |A code block. These define their own scope, so
-                   -- |they can have local variable declarations, as
-                   -- |well as a list of statements.
+                   --  they can have local variable declarations, as
+                   --  well as a list of statements.
                    | CompoundStatement [Variable] [Statement]
 
-                   -- |An 'if' statement, with a then-clause and an
-                   -- |optional else clause. The else clause, if
-                   -- |non-existent, is represented by a NullStatement.
+                   -- |An if statement, with a then-clause and an
+                   --  optional else clause. The else clause, if
+                   --  non-existent, is represented by a NullStatement.
                    | SelectionStatement Expression Statement Statement
 
-                   -- |A 'while' statement, with a condition and a statement.
+                   -- |A while statement, with a condition and a statement.
                    | IterationStatement Expression Statement
 
-                   -- |A 'return' statement, with no return
-                   -- |value. This is must be in a Void function.
+                   -- |A return statement, with no return
+                   --  value. This is must be in a Void function.
                    | ReturnStatement
 
-                   -- |A 'return' statement with a return value.
+                   -- |A return statement with a return value.
                    | ValueReturnStatement Expression
 
                    -- |An empty statement. These are only generated
-                   -- |when an IterationStatement lacks an else-clause
+                   --  when an IterationStatement lacks an else-clause
                    | NullStatement -- A nothing statement (e.g. missing "else")
                      deriving (Show, Eq)
 
-    data Toplevel = ToplevelVar  Variable -- ^A global variable
-                  | ToplevelFunc Function -- ^A top-level function
+    data Toplevel = GlobalVariable Variable -- ^A global variable
+                  | Function Type String [Variable] Statement
                     deriving (Show, Eq)
 
     -- |The top parser. This parses an entire C-Minus source file
@@ -95,13 +92,13 @@ module Compiler.Parser where
                    <?> "a function declaration or global variable"
         where toplevelTail t id = do { args <- parens params <?> "function arguments"
                                      ; body <- braces compound_stmt <?> "function body"
-                                     ; return $ ToplevelFunc (Function t id args body)
+                                     ; return $ Function t id args body
                                      }  
                               <|> do { size <- squares (integer <?> "array size") <?> "array bounds"
                                      ; semi
-                                     ; return $ ToplevelVar$Variable (Array t size) id
+                                     ; return $ GlobalVariable$Variable (Array t size) id
                                      }
-                              <|> (semi >> (return $ ToplevelVar $ Variable t id))
+                              <|> (semi >> (return $ GlobalVariable $ Variable t id))
 
     var_declaration = do { p <- param
                          ; semi
