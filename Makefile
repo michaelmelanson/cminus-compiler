@@ -10,3 +10,9 @@ build:
 
 clean:
 	runhaskell Setup.hs clean
+
+docs:
+	runhaskell Setup.hs haddock
+	runhaskell Setup.hs haddock --hoogle
+	-rm -Rf doc/haddock/
+	cp -R dist/doc/html/cmc doc/haddock

@@ -18,13 +18,11 @@ instance Show Type
 instance Eq Type
 
 
--- | The parser for the C-Minus compiler. This converts the token |stream
+-- | The parser for the C-Minus compiler. This converts the token stream
 --   produced by Compiler.Scanner into an abstract syntax tree.
 module Compiler.Parser
 data Variable
 Variable :: Type -> String -> Variable
-data Function
-Function :: Type -> String -> [Variable] -> Statement -> Function
 data Value
 
 -- | A literal integer value
@@ -53,8 +51,8 @@ Equal :: Operator
 NotEqual :: Operator
 data Expression
 
--- | Assignment of an expression to either a VariableRef or |an ArrayRef
---   (the other constructors for Value are |never generated).
+-- | Assignment of an expression to either a VariableRef or an ArrayRef
+--   (the other constructors for Value are never generated).
 AssignmentExpr :: Value -> Expression -> Expression
 
 -- | An arithmetic expression
@@ -64,38 +62,36 @@ ArithmeticExpr :: Operator -> Expression -> Expression -> Expression
 ValueExpr :: Value -> Expression
 data Statement
 
--- | A statement that's also an expression (probably |an assignment, though
+-- | A statement that's also an expression (probably an assignment, though
 --   not necessarily)
 ExpressionStatement :: Expression -> Statement
 
--- | A code block. These define their own scope, so |they can have local
---   variable declarations, as |well as a list of statements.
+-- | A code block. These define their own scope, so they can have local
+--   variable declarations, as well as a list of statements.
 CompoundStatement :: [Variable] -> [Statement] -> Statement
 
--- | An 'if' statement, with a then-clause and an |optional else clause.
---   The else clause, if |non-existent, is represented by a NullStatement.
+-- | An if statement, with a then-clause and an optional else clause. The
+--   else clause, if non-existent, is represented by a NullStatement.
 SelectionStatement :: Expression -> Statement -> Statement -> Statement
 
 -- | A while statement, with a condition and a statement.
 IterationStatement :: Expression -> Statement -> Statement
 
--- | A <a>return</a> statement, with no return |value. This is must be in a
---   Void function.
+-- | A return statement, with no return value. This is must be in a Void
+--   function.
 ReturnStatement :: Statement
 
--- | A <a>return</a> statement with a return value.
+-- | A return statement with a return value.
 ValueReturnStatement :: Expression -> Statement
 
--- | An empty statement. These are only generated |when an
+-- | An empty statement. These are only generated when an
 --   IterationStatement lacks an else-clause
 NullStatement :: Statement
 data Toplevel
 
 -- | A global variable
-ToplevelVar :: Variable -> Toplevel
-
--- | A top-level function
-ToplevelFunc :: Function -> Toplevel
+GlobalVariable :: Variable -> Toplevel
+Function :: Type -> String -> [Variable] -> Statement -> Toplevel
 instance Show Toplevel
 instance Eq Toplevel
 instance Show Statement
@@ -106,7 +102,5 @@ instance Show Operator
 instance Eq Operator
 instance Show Value
 instance Eq Value
-instance Show Function
-instance Eq Function
 instance Show Variable
 instance Eq Variable

@@ -57,7 +57,7 @@
 ><TR
 ><TD CLASS="doc"
 >The parser for the C-Minus compiler. This converts the token
- |stream produced by Compiler.Scanner into an abstract syntax tree.
+  stream produced by Compiler.Scanner into an abstract syntax tree.
 </TD
 ></TR
 ><TR
@@ -86,26 +86,6 @@
 > <A HREF="Compiler-Scanner.html#t%3AType"
 >Type</A
 > String</TD
-></TR
-><TR
-><TD CLASS="s8"
-></TD
-></TR
-><TR
-><TD CLASS="decl"
-><SPAN CLASS="keyword"
->data</SPAN
->  <A HREF="#t%3AFunction"
->Function</A
->  = <A HREF="#v%3AFunction"
->Function</A
-> <A HREF="Compiler-Scanner.html#t%3AType"
->Type</A
-> String [<A HREF="Compiler-Parser.html#t%3AVariable"
->Variable</A
->] <A HREF="Compiler-Parser.html#t%3AStatement"
->Statement</A
-></TD
 ></TR
 ><TR
 ><TD CLASS="s8"
@@ -401,18 +381,22 @@
 ><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
 ><TR
 ><TD CLASS="decl"
->= <A HREF="#v%3AToplevelVar"
->ToplevelVar</A
+>= <A HREF="#v%3AGlobalVariable"
+>GlobalVariable</A
 > <A HREF="Compiler-Parser.html#t%3AVariable"
 >Variable</A
 ></TD
 ></TR
 ><TR
 ><TD CLASS="decl"
->| <A HREF="#v%3AToplevelFunc"
->ToplevelFunc</A
-> <A HREF="Compiler-Parser.html#t%3AFunction"
+>| <A HREF="#v%3AFunction"
 >Function</A
+> <A HREF="Compiler-Scanner.html#t%3AType"
+>Type</A
+> String [<A HREF="Compiler-Parser.html#t%3AVariable"
+>Variable</A
+>] <A HREF="Compiler-Parser.html#t%3AStatement"
+>Statement</A
 ></TD
 ></TR
 ></TABLE
@@ -490,77 +474,6 @@
 ><TD CLASS="decl"
 >Show <A HREF="Compiler-Parser.html#t%3AVariable"
 >Variable</A
-></TD
-></TR
-></TABLE
-></DIV
-></TD
-></TR
-></TABLE
-></TD
-></TR
-><TR
-><TD CLASS="s15"
-></TD
-></TR
-><TR
-><TD CLASS="decl"
-><SPAN CLASS="keyword"
->data</SPAN
->  <A NAME="t%3AFunction"
-></A
-><B
->Function</B
->  </TD
-></TR
-><TR
-><TD CLASS="body"
-><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
-><TR
-><TD CLASS="section4"
->Constructors</TD
-></TR
-><TR
-><TD CLASS="body"
-><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
-><TR
-><TD CLASS="arg"
-><A NAME="v%3AFunction"
-></A
-><B
->Function</B
-> <A HREF="Compiler-Scanner.html#t%3AType"
->Type</A
-> String [<A HREF="Compiler-Parser.html#t%3AVariable"
->Variable</A
->] <A HREF="Compiler-Parser.html#t%3AStatement"
->Statement</A
-></TD
-><TD CLASS="rdoc"
-></TD
-></TR
-></TABLE
-></TD
-></TR
-><TR
-><TD CLASS="section4"
-><IMG SRC="minus.gif" CLASS="coll" ONCLICK="toggle(this,'i:Function')" ALT="show/hide"
-> Instances</TD
-></TR
-><TR
-><TD CLASS="body"
-><DIV ID="i:Function" STYLE="display:block;"
-><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
-><TR
-><TD CLASS="decl"
->Eq <A HREF="Compiler-Parser.html#t%3AFunction"
->Function</A
-></TD
-></TR
-><TR
-><TD CLASS="decl"
->Show <A HREF="Compiler-Parser.html#t%3AFunction"
->Function</A
 ></TD
 ></TR
 ></TABLE
@@ -870,8 +783,8 @@
 ></TD
 ><TD CLASS="rdoc"
 >Assignment of an expression to either a VariableRef or
- |an ArrayRef (the other constructors for Value are
- |never generated).
+  an ArrayRef (the other constructors for Value are
+  never generated).
 </TD
 ></TR
 ><TR
@@ -970,7 +883,7 @@
 ></TD
 ><TD CLASS="rdoc"
 >A statement that's also an expression (probably
- |an assignment, though not necessarily)
+  an assignment, though not necessarily)
 </TD
 ></TR
 ><TR
@@ -986,8 +899,8 @@
 >]</TD
 ><TD CLASS="rdoc"
 >A code block. These define their own scope, so
- |they can have local variable declarations, as
- |well as a list of statements.
+  they can have local variable declarations, as
+  well as a list of statements.
 </TD
 ></TR
 ><TR
@@ -1004,9 +917,9 @@
 >Statement</A
 ></TD
 ><TD CLASS="rdoc"
->An 'if' statement, with a then-clause and an
- |optional else clause. The else clause, if
- |non-existent, is represented by a NullStatement.
+>An if statement, with a then-clause and an
+  optional else clause. The else clause, if
+  non-existent, is represented by a NullStatement.
 </TD
 ></TR
 ><TR
@@ -1032,10 +945,8 @@
 >ReturnStatement</B
 ></TD
 ><TD CLASS="rdoc"
->A <TT
->return</TT
-> statement, with no return
- |value. This is must be in a Void function.
+>A return statement, with no return
+  value. This is must be in a Void function.
 </TD
 ></TR
 ><TR
@@ -1048,9 +959,7 @@
 >Expression</A
 ></TD
 ><TD CLASS="rdoc"
->A <TT
->return</TT
-> statement with a return value.
+>A return statement with a return value.
 </TD
 ></TR
 ><TR
@@ -1062,7 +971,7 @@
 ></TD
 ><TD CLASS="rdoc"
 >An empty statement. These are only generated
- |when an IterationStatement lacks an else-clause
+  when an IterationStatement lacks an else-clause
 </TD
 ></TR
 ></TABLE
@@ -1122,10 +1031,10 @@
 ><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
 ><TR
 ><TD CLASS="arg"
-><A NAME="v%3AToplevelVar"
+><A NAME="v%3AGlobalVariable"
 ></A
 ><B
->ToplevelVar</B
+>GlobalVariable</B
 > <A HREF="Compiler-Parser.html#t%3AVariable"
 >Variable</A
 ></TD
@@ -1135,16 +1044,19 @@
 ></TR
 ><TR
 ><TD CLASS="arg"
-><A NAME="v%3AToplevelFunc"
+><A NAME="v%3AFunction"
 ></A
 ><B
->ToplevelFunc</B
-> <A HREF="Compiler-Parser.html#t%3AFunction"
->Function</A
+>Function</B
+> <A HREF="Compiler-Scanner.html#t%3AType"
+>Type</A
+> String [<A HREF="Compiler-Parser.html#t%3AVariable"
+>Variable</A
+>] <A HREF="Compiler-Parser.html#t%3AStatement"
+>Statement</A
 ></TD
 ><TD CLASS="rdoc"
->A top-level function
-</TD
+></TD
 ></TR
 ></TABLE
 ></TD
