@@ -91,6 +91,8 @@ data Toplevel
 
 -- | A global variable
 GlobalVariable :: Variable -> Toplevel
+
+-- | A function declaration
 Function :: Type -> String -> [Variable] -> Statement -> Toplevel
 instance Show Toplevel
 instance Eq Toplevel

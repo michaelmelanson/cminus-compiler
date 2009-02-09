@@ -74,7 +74,7 @@ module Compiler.Parser where
                      deriving (Show, Eq)
 
     data Toplevel = GlobalVariable Variable -- ^A global variable
-                  | Function Type String [Variable] Statement
+                  | Function Type String [Variable] Statement -- ^A function declaration
                     deriving (Show, Eq)
 
     -- |The top parser. This parses an entire C-Minus source file
