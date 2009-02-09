@@ -77,7 +77,7 @@ SelectionStatement :: Expression -> Statement -> Statement -> Statement
 -- | A while statement, with a condition and a statement.
 IterationStatement :: Expression -> Statement -> Statement
 
--- | A return statement, with no return value.
+-- | A return statement with no return value.
 ReturnStatement :: Statement
 
 -- | A return statement with a return value.

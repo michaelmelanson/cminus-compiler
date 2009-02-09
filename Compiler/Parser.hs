@@ -61,8 +61,7 @@ module Compiler.Parser where
                    -- |A while statement, with a condition and a statement.
                    | IterationStatement Expression Statement
 
-                   -- |A return statement, with no return
-                   --  value.
+                   -- |A return statement with no return value.
                    | ReturnStatement
 
                    -- |A return statement with a return value.
