@@ -1,0 +1,18 @@
+/* -*- c -*-
+   
+   A variation of the example in the Checkpoint 1 report, except that
+   this one initializes the variable in the main function -- something
+   that you can't do in C-.
+
+ */
+
+int main(void)
+{
+    int a = 0;
+    while(a < 10) {
+        output(a);
+        a = a + 1;
+    }
+
+    return 0;
+}
