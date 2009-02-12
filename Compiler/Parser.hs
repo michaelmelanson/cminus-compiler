@@ -43,10 +43,10 @@ module Compiler.Parser where
                ; x <- maybeArrayLen t id
                ; return x
                }
-        where maybeArrayLen t id = do { squares whiteSpace
+        where maybeArrayLen t id = do { squares whiteSpace <?> "array bounds"
                                       ; return $ Variable (Pointer t) id
                                       }
-                               <|> do { size <- squares integer
+                               <|> do { size <- squares integer <?> "array bounds"
                                       ; return $ Variable (Array t size) id
                                       }
                                <|> (return $ Variable t id)
@@ -116,7 +116,8 @@ module Compiler.Parser where
               
               maybeindex ident = do { index <- squares expression
                                     ; return $ ArrayRef ident index
-                                    } <|> do { return $ VariableRef ident }
+                                    }
+                             <|> do { return $ VariableRef ident }
                              
 
 
