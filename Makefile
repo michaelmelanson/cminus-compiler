@@ -12,8 +12,9 @@ clean:
 	runhaskell Setup.hs clean
 
 docs:
-	runhaskell Setup.hs haddock
-	runhaskell Setup.hs haddock --hoogle
+	cd doc && xelatex report1
+
+	runhaskell Setup.hs haddock --executables
 	-rm -Rf doc/haddock/
 	cp -R dist/doc/html/cmc doc/haddock
 
