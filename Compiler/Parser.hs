@@ -22,13 +22,19 @@ module Compiler.Parser where
                        ; return x
                        }
                    <?> "a function declaration or global variable"
-        where toplevelTail t id = do { args <- parens params <?> "function arguments"
-                                     ; body <- braces compound_stmt <?> "function body"
+        where toplevelTail t id = do { args <- parens params
+                                               <?> "function arguments"
+
+                                     ; body <- braces compound_stmt
+                                               <?> "function body"
+
                                      ; return $ Function t id args body
                                      }  
-                              <|> do { size <- squares (integer <?> "array size") <?> "array bounds"
+                              <|> do { size <- squares (integer <?> "array size")
+                                               <?> "array bounds"
                                      ; semi
-                                     ; return $ GlobalVariable$Variable (Array t size) id
+                                     ; return $ GlobalVariable $
+                                                Variable (Array t size) id
                                      }
                               <|> (semi >> (return $ GlobalVariable $ Variable t id))
 
@@ -53,7 +59,9 @@ module Compiler.Parser where
 
     params = (reserved "void" >> return []) <|> commaSep1 param
 
-    statement = (var_declaration >> unexpected "variable declaration (variables must be declared before any statements)")
+    statement = do { var_declaration
+                   ; unexpected "variable declaration (variables must be declared before any statements)"
+                   }
             <|> return_stmt
             <|> braces compound_stmt
             <|> selection_stmt
