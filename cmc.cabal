@@ -6,7 +6,7 @@ License-File:   LICENSE
 Copyright:      (c) Michael Melanson 2009
 Synopsis:       Compiler for the C-Minus language
 Description:    cmc is a compiler for the C-Minus language. Includes IPPrint
-		(not written by me).
+		written by Gleb Alexeyev <gleb.alexeev@gmail.com>.
 Maintainer:     Michael Melanson <michael@michaelmelanson.net>
 Stability:      experimental
 Category:       Compiler
