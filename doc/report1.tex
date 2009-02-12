@@ -1,0 +1,143 @@
+\documentclass[12pt]{amsart}
+\usepackage{fullpage}
+
+\title{CIS*4650 Checkpoint 1 report}
+\author{Michael Melanson}
+
+\begin{document}
+\maketitle
+
+\section{Summary}
+The goal of this checkpoint was to implement the tokenization and
+syntactic analysis phases of a C-Minus compiler. That is, the program
+should input a character stream from disc, and output its equivalent
+abstract syntax tree.
+
+
+\section{Building and running}
+
+\subsection{Dependencies}
+As described in Section~\ref{implementation}, the scanner and parser
+are written in Haskell. Since a Haskell compiler is not standard on
+most operating systems, the \verb|ghc| (Glasgow Haskell Compiler)
+package will have to be installed. In addition, the Parsec ``parser
+combinator library'' is required.
+
+On Ubuntu or Debian, this can be done by running:
+\begin{verse}
+\verb|sudo apt-get install ghc haskell-parsec|
+\end{verse}
+
+On Fedora, CentOS, or other RPM-based distributions, this can be done
+by running\footnote{I do not have access to such a system, so this is
+  an educated guess; my understanding is that Parsec is included with
+  GHC.}:
+\begin{verse}
+\verb|sudo yum install ghc|
+\end{verse}
+
+Other operating systems will have similar installation procedures.
+
+\subsection{Building}
+Internally, the Haskell build system Cabal is used to automate
+building and packaging of the code. However, as per the assigment
+specification, a Makefile has been included; this Makefile simply
+invokes Cabal. The Makefile includes the following rules:
+
+\begin{description}
+\item[all] The default rule; invokes \emph{configure} then
+  \emph{build}. 
+\item[configure] Checks dependencies, prepares the \verb|dist| directory.
+\item[build] Compiles and links the executable files.
+\item[clean] Removes all generated files.
+\item[docs] Generates source documentation (may require the additional
+  \verb|haddock| package to be installed)
+\end{description}
+
+To compile the program, run \verb|make|.
+
+\subsection{Invocation}
+The compiler binary will be put in \verb|dist/build/cmc/cmc|. It
+accepts one of two flags, followed by a file path:
+
+\begin{description}
+\item[-a] Show the parsed abstract syntax tree.
+\item[-c] Check for errors only; either prints syntax errors or ``No
+  errors'' if there are none.
+\end{description}
+
+If given any other combination of arguments, it will print usage
+information to the terminal.
+
+
+\section{Implementation notes}
+\label{implementation}
+
+The compiler is written in Haskell, using the Parsec library to make
+parsing easier. In total, the source code weighs in at approximately
+300 lines, including blank lines, comments and data structure
+declarations (for the abstract syntax tree).
+
+
+
+
+\section{Example syntrax tree}
+Given the simple C-Minus program to print the numbers from 0 to 9:
+
+\begin{verse}
+\begin{verbatim}
+   int main(void)
+{
+    int a;
+    a = 0;
+    while(a < 10) {
+        output(a);
+        a = a + 1;
+    }
+
+    return 0;
+}
+\end{verbatim}
+\end{verse}
+
+The compiler will produce the following abstract syntax
+tree\footnote{The text has been reformatted to fit on the page.}:
+
+\begin{verse}
+\begin{verbatim}
+   [Function Int "main" []
+      (CompoundStatement [Variable Int "a"]
+         [ExpressionStatement
+            (AssignmentExpr
+               (VariableRef "a")
+               (ValueExpr (IntValue 0))),
+          IterationStatement
+            (ArithmeticExpr Less
+               (ValueExpr (VariableRef "a"))
+               (ValueExpr (IntValue 10)))
+            (CompoundStatement []
+               [ExpressionStatement
+                  (ValueExpr
+                   (FunctionCall "output"
+                    [ValueExpr (VariableRef "a")])),
+                ExpressionStatement
+                  (AssignmentExpr (VariableRef "a")
+                     (ArithmeticExpr Add
+                        (ValueExpr (VariableRef "a"))
+                        (ValueExpr (IntValue 1))))]),
+          ValueReturnStatement (ValueExpr (IntValue 0))])]
+\end{verbatim}
+\end{verse}
+
+This output is Haskell data structures produced by
+the parser, pretty-printed for legibility.
+
+\section{Limitations}
+Although error detection and reporting is very thorough, no support
+has been added for error recovery. That is, once a parsing error has
+been encountered, it is printed and the program aborts. This is due to
+a limitation of Parsec; it provides no such capability. To add it
+would have greatly complicated the parsing rules and syntax tree.
+
+
+\end{document}
