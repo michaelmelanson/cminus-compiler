@@ -6,3 +6,6 @@
 *.ps
 dist/**
 .DS_Store
+*.dvi
+*.log
+*.pdf
