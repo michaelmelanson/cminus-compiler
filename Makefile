@@ -16,3 +16,5 @@ docs:
 	runhaskell Setup.hs haddock --hoogle
 	-rm -Rf doc/haddock/
 	cp -R dist/doc/html/cmc doc/haddock
+
+.PHONY: all configure build clean docs
