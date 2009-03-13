@@ -1,0 +1,119 @@
+\documentclass[12pt]{amsart}
+\usepackage{fullpage}
+
+\title{CIS*4650 Checkpoint 2 report}
+\author{Michael Melanson}
+
+\begin{document}
+\maketitle
+
+\section{Summary}
+The goal of this checkpoint was to add type inference and checking to
+the C-Minus parser written for Checkpoint~1. It should check for
+common errors, such as undefined variables, mismatched types, bad
+function parameters, and so on.
+
+
+\section{Building and running}
+
+\subsection{Dependencies}
+As described in Section~\ref{implementation}, the enclosed compiler
+written in Haskell. Since a Haskell compiler is not standard on most
+operating systems, the \verb|ghc| (Glasgow Haskell Compiler) package
+may need to be installed. In addition, the Parsec ``parser combinator
+library'' is required.
+
+On Ubuntu or Debian, this can be done by running:
+\begin{verse}
+\verb|sudo apt-get install ghc haskell-parsec|
+\end{verse}
+
+On Fedora, CentOS, or other RPM-based distributions, this can be done
+by running\footnote{I do not have access to such a system, so this is
+  an educated guess; my understanding is that Parsec is included with
+  GHC.}:
+\begin{verse}
+\verb|sudo yum install ghc|
+\end{verse}
+
+Other operating systems will have similar installation procedures.
+
+\subsection{Building}
+Internally, the Haskell build system Cabal is used to automate
+building and packaging of the code. However, as per the assigment
+specification, a Makefile has been included; this Makefile simply
+invokes Cabal. The Makefile includes the following rules:
+
+\begin{description}
+\item[all] The default rule; invokes \emph{configure} then
+  \emph{build}. 
+\item[configure] Checks dependencies, prepares the \verb|dist| directory.
+\item[build] Compiles and links the executable files.
+\item[clean] Removes all generated files.
+\item[docs] Generates source documentation (may require the additional
+  \verb|haddock| package to be installed)
+\end{description}
+
+To compile the program, run \verb|make|. This produces two targets:
+\verb|cm| and \verb|cm-test|, which are placed in their respective
+directories in \verb|dist/build|. The \verb|cm-test| target, when
+executed, runs a set of smoke tests against the compiler code. The
+purpose of these tests is to verify that the compiler is not seriously
+broken. They check that the basic program structures are parsed
+correctly, and are fairly complete although not exhaustive. The main
+interface to the compiler, however, is through the \verb|cm|
+target. Its usage is detailed below.
+
+\subsection{Invocation}
+The compiler binary will be put in \verb|dist/build/cm/cm|. It
+requires one of three flags, followed by a file path:
+
+\begin{description}
+\item[-a] Show the parsed abstract syntax tree.
+\item[-s] Show symbol table contents
+\item[-c] Check for errors only; either prints syntax errors or ``No
+  errors'' if there are none.
+\end{description}
+
+There are also long forms of these flags, as explained if instead the
+\verb|cm| binary is run with the \verb|--help| flag. If given any
+other combination of arguments, it will print usage information and
+terminate.
+
+
+\section{Implementation notes}
+\label{implementation}
+
+Like for Checkpoint~1, the code for this checkpoint is written in
+Haskell, using the Parsec library to generate parsing tables. This
+checkpoint is considerably longer than the last, at approximately 820
+lines total, compared to 300 for the first checkpoint.
+
+The abstract syntax tree implemented as part of Checkpoint~1 has not
+been significantly modified. It has, however, been augmented with
+positioning information via the \verb|Positioned| type
+class\footnote{In Haskell, a type class is somewhat like a mixture of
+  Java's generics and interfaces in that it defines a set of common
+  features for any data type that instantiate it, while also requiring
+  those instances to define the implementation of the
+  features.}. Adding this information as a type class rather than as a
+member of each of the datatypes allowed me to avoid significantly
+altering the abstract data type.
+
+Two other type classes were also added, one called \verb|Nameable| and
+one called \verb|Typeable|. These define the polymorphic \verb|typeOf|
+and \verb|nameOf| methods used throughout the type checking code.
+
+\section{Limitations}
+The lack of error recovery mentioned in the Checkpoint~1 report is
+still true for this checkpoint. Although I attempted to add error
+recovery by adding \verb|manyR| and \verb|many1R| operators to Parsec,
+which would work like Parsec's built-in \verb|many| and \verb|many1|
+operators\footnote{See documentation at {\texttt
+    http://hackage.haskell.org/packages/archive/parsec/3.0.0/doc/html/Text-ParserCombinators-Parsec-Combinator.html}}
+except that they would perform error recovery on failure.
+
+
+
+
+\end{document}
