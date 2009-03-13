@@ -9,53 +9,54 @@ module Main where
 
     data Result = Correct
                   | ParseError ParseError
-                  | Incorrect [Toplevel]
+                  | Incorrect [Positioned Symbol]
 
     instance Show Result where
             show Correct = "correct"
             show (ParseError err) = "parse error: " ++ show err
             show (Incorrect actual) = "incorrect output: " ++ show actual
 
+    tests :: [(String, [Positioned Symbol])]
     tests = [
      ("/* comment */ int a;",
-      [GlobalVariable (Variable Int "a")]),
+      [AnyPosition $ VarSymbol (Variable Int "a")]),
 
-     ("int a(void) { /* foo */ }",
-      [Function Int "a" [] (CompoundStatement [] [])]),
+     ("/* comment */ int a(void) { /* foo */ }",
+      [AnyPosition $ FuncSymbol $ Function Int "a" [] (AnyPosition (CompoundStatement [] []))]),
 
      ("int a(void) { return; }",
-      [Function Int "a" []
-                     (CompoundStatement [] [ReturnStatement])]),
+      [AnyPosition $ FuncSymbol $ Function Int "a" []
+                     (AnyPosition $ CompoundStatement [] [AnyPosition ReturnStatement])]),
 
      ("int a(void) { return 0; }",
-      [Function Int "a" []
-                     (CompoundStatement []
-                      [ValueReturnStatement (ValueExpr (IntValue 0))])]),
+      [AnyPosition $ FuncSymbol $ Function Int "a" []
+                     (AnyPosition $ CompoundStatement []
+                      [AnyPosition $ ValueReturnStatement (ValueExpr (IntValue 0))])]),
 
      ("int a(void) { return x; }",
-      [Function Int "a" []
-                     (CompoundStatement []
-                      [ValueReturnStatement (ValueExpr (VariableRef "x"))])]),
+      [AnyPosition $ FuncSymbol $ Function Int "a" []
+                     (AnyPosition $ CompoundStatement []
+                      [AnyPosition $ ValueReturnStatement (ValueExpr (VariableRef "x"))])]),
 
 
      ("int a(void) { a = x; }",
-      [Function Int "a" []
-                     (CompoundStatement []
-                      [ExpressionStatement
+      [AnyPosition $ FuncSymbol $ Function Int "a" []
+                     (AnyPosition $ CompoundStatement []
+                      [AnyPosition $ ExpressionStatement
                        (AssignmentExpr (VariableRef "a")
                         (ValueExpr (VariableRef "x")))])]),
 
      ("int a(void) { a[1] = x; }",
-      [Function Int "a" []
-                     (CompoundStatement []
-                      [ExpressionStatement
+      [AnyPosition $ FuncSymbol $ Function Int "a" []
+                     (AnyPosition $ CompoundStatement []
+                      [AnyPosition $ ExpressionStatement
                        (AssignmentExpr (ArrayRef "a" (ValueExpr (IntValue 1)))
                         (ValueExpr (VariableRef "x")))])]),
 
      ("int a(void) { a = 2*x+1; }",
-      [Function Int "a" []
-                     (CompoundStatement []
-                      [ExpressionStatement
+      [AnyPosition $ FuncSymbol $ Function Int "a" []
+                     (AnyPosition $ CompoundStatement []
+                      [AnyPosition $ ExpressionStatement
                        (AssignmentExpr (VariableRef "a")
                         (ArithmeticExpr Add
                          (ArithmeticExpr Multiply
@@ -65,69 +66,73 @@ module Main where
 
 
      ("int a(void) { a = x[0]; }",
-      [Function Int "a" []
-                     (CompoundStatement []
-                      [ExpressionStatement
+      [AnyPosition $ FuncSymbol $ Function Int "a" []
+                     (AnyPosition $ CompoundStatement []
+                      [AnyPosition $ ExpressionStatement
                        (AssignmentExpr (VariableRef "a")
                         (ValueExpr (ArrayRef "x" (ValueExpr (IntValue 0)))))])]),
 
      ("int a(void) { int x; x = 0; }",
-      [Function Int "a" []
-                     (CompoundStatement [Variable Int "x"]
-                      [ExpressionStatement
+      [AnyPosition $ FuncSymbol $ Function Int "a" []
+                     (AnyPosition $ CompoundStatement [AnyPosition $ Variable Int "x"]
+                      [AnyPosition $ ExpressionStatement
                        (AssignmentExpr (VariableRef "x")
                         (ValueExpr (IntValue 0)))])]),
 
      ("int a(void) { while(1) { } }",
-      [Function Int "a" []
-                     (CompoundStatement []
-                      [IterationStatement (ValueExpr (IntValue 1))
-                       (CompoundStatement [] [])])]),
+      [AnyPosition $ FuncSymbol $ Function Int "a" []
+                     (AnyPosition $ CompoundStatement []
+                      [AnyPosition $ IterationStatement (ValueExpr (IntValue 1))
+                       (AnyPosition $ CompoundStatement [] [])])]),
 
      ("int a(void) { if(1) { } }",
-      [Function Int "a" []
-                         (CompoundStatement []
-                          [SelectionStatement (ValueExpr (IntValue 1))
-                           (CompoundStatement [] [])
-                           NullStatement])]),
+      [AnyPosition $ FuncSymbol $ Function Int "a" []
+                         (AnyPosition $ CompoundStatement []
+                          [AnyPosition $ SelectionStatement (ValueExpr (IntValue 1))
+                           (AnyPosition $ CompoundStatement [] [])
+                           (AnyPosition NullStatement)])]),
 
      ("int a(void) { if(1) { } else { }}",
-      [Function Int "a" []
-                         (CompoundStatement []
-                          [SelectionStatement (ValueExpr (IntValue 1))
-                           (CompoundStatement [] [])
-                           (CompoundStatement [] [])])]),
+      [AnyPosition $ FuncSymbol $ Function Int "a" []
+                         (AnyPosition $ CompoundStatement []
+                          [AnyPosition $ SelectionStatement (ValueExpr (IntValue 1))
+                           (AnyPosition $ CompoundStatement [] [])
+                           (AnyPosition $ CompoundStatement [] [])])]),
 
      ("int a(void) { int a; }",
-      [Function Int "a" []
-                         (CompoundStatement
-                          [Variable Int "a"] 
+      [AnyPosition $ FuncSymbol $ Function Int "a" []
+                         (AnyPosition $ CompoundStatement
+                          [AnyPosition $ Variable Int "a"] 
                           [])]),
 
      ("int a(void) { int a; if(0) {} }",
-      [Function Int "a" []
-                         (CompoundStatement
-                          [Variable Int "a"]
-                          [SelectionStatement (ValueExpr (IntValue 0))
-                           (CompoundStatement [] [])
-                           NullStatement])]),
+      [AnyPosition $ FuncSymbol $ Function Int "a" []
+                         (AnyPosition $ CompoundStatement
+                          [AnyPosition $ Variable Int "a"]
+                          [AnyPosition $ SelectionStatement (ValueExpr (IntValue 0))
+                           (AnyPosition $ CompoundStatement [] [])
+                           (AnyPosition $ NullStatement)])]),
 
      ("int a[10];",
-      [GlobalVariable (Variable (Array Int 10) "a")]),
+      [AnyPosition $ VarSymbol (Variable (Array Int 10) "a")]),
 
 
      ("int a(int x[]) {}",
-      [Function Int "a" [Variable (Pointer Int) "x"]
-       (CompoundStatement [] [])]),
+      [AnyPosition $ FuncSymbol $ Function Int "a" [AnyPosition $ Variable (Pointer Int) "x"]
+       (AnyPosition $ CompoundStatement [] [])]),
 
      ("void main(void) {}",
-      [Function Void "main" []
-       (CompoundStatement [] [])]),
+      [AnyPosition $ FuncSymbol $ Function Void "main" []
+       (AnyPosition $ CompoundStatement [] [])]),
+
+     ("void main(void) { int a[10]; }",
+      [AnyPosition $ FuncSymbol $ Function Int "main" []
+       (AnyPosition $ CompoundStatement [AnyPosition $ Variable (Array Int 10) "a"] [])]),
 
      ("void main(void) { foo(2,3); }",
-      [Function Void "main" []
-       (CompoundStatement []
-        [ExpressionStatement
+      [AnyPosition $ FuncSymbol $ Function Void "main" []
+       (AnyPosition $ CompoundStatement []
+        [AnyPosition $ ExpressionStatement
          (ValueExpr 
           (FunctionCall "foo"
            [ValueExpr (IntValue 2),
@@ -139,7 +144,7 @@ module Main where
                   where result = let out = parse program "" code
                                  in case out of
                                       Left err -> ParseError err
-                                      Right result ->
+                                      Right (Program result) ->
                                           if result == expected
                                           then Correct
                                           else Incorrect result

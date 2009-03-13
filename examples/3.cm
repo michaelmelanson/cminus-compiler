@@ -1,12 +1,16 @@
 /* -*- c -*-
  
-   Missing semicolon; note the helpful error message
+   Trying to use a void value in an expression
 
 */
 
-int a
-
-void main(void)
+void f(int x)
 {
+    return;
+}
 
+int main(void)
+{
+    int a;
+    a = f(2) + 1;
 }

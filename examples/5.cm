@@ -1,18 +1,17 @@
 /* -*- c -*-
-   
-   A variation of the example in the Checkpoint 1 report, except that
-   this one initializes the variable in the main function -- something
-   that you can't do in C-.
+
+   Array bounds out of range
 
  */
 
+int a[10];
+
 int main(void)
 {
-    int a = 0;
-    while(a < 10) {
-        output(a);
-        a = a + 1;
-    }
+    int b;
+
+    b = a[0] + a[9]; /* This is fine */
+    b = a[10];       /* error */
 
     return 0;
 }

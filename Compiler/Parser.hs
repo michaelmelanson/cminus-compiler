@@ -6,37 +6,46 @@ module Compiler.Parser where
     import Compiler.Scanner
 
     import Text.ParserCombinators.Parsec 
+    import Text.ParserCombinators.Parsec.Prim
     import Text.ParserCombinators.Parsec.Expr hiding (Operator)
 
+    import Monad
 
     -- |The top parser. This parses an entire C-Minus source file
     program = do { whiteSpace
-                 ; p <- many1 toplevel_decl
-                 ; return p
+                 ; syms <- many1 toplevel_decl
+                 ; return $ Program syms
                  }
 
     -- |Parser for one top-level declaration (either a global variable or a function)
-    toplevel_decl = do { t <- typeSpec
-                       ; id <- identifier
-                       ; x <- toplevelTail t id
-                       ; return x
-                       }
-                   <?> "a function declaration or global variable"
-        where toplevelTail t id = do { args <- parens params
-                                               <?> "function arguments"
+    toplevel_decl = (try function_declaration) <|> (try global_variable)
 
-                                     ; body <- braces compound_stmt
-                                               <?> "function body"
+    function_declaration = do { t <- typeSpec
+                              ; id <- identifier
+                              ; args <- parens params
+                                        <?> "function arguments"
+                                            
+                              ; body <- braces compound_stmt
+                                        <?> "function body"
+                                            
+                              ; returnWithPosition $ FuncSymbol $ Function t id args body
+                              }
+                           <?> "function declaration"
 
-                                     ; return $ Function t id args body
-                                     }  
-                              <|> do { size <- squares (integer <?> "array size")
-                                               <?> "array bounds"
-                                     ; semi
-                                     ; return $ GlobalVariable $
-                                                Variable (Array t size) id
-                                     }
-                              <|> (semi >> (return $ GlobalVariable $ Variable t id))
+    global_variable = try (do { t <- typeSpec
+                              ; id <- identifier
+                              ; size <- squares (integer <?> "array size")
+                                        <?> "array bounds"
+                              ; semi
+                              ; returnWithPosition $ VarSymbol $ Variable (Array t size) id
+                              })
+                      <|>
+                      do { t <- typeSpec
+                         ; id <- identifier
+                         ; semi
+                         ; returnWithPosition $ VarSymbol $ Variable t id
+                         }
+                      <?> "global variable"
 
     var_declaration = do { p <- param
                          ; semi
@@ -47,7 +56,7 @@ module Compiler.Parser where
     param = do { t <- typeSpec
                ; id <- identifier
                ; x <- maybeArrayLen t id
-               ; return x
+               ; returnWithPosition x
                }
         where maybeArrayLen t id = do { squares whiteSpace <?> "array bounds"
                                       ; return $ Variable (Pointer t) id
@@ -71,49 +80,49 @@ module Compiler.Parser where
 
     expression_stmt = do { expr <- expression
                          ; semi
-                         ; return $ ExpressionStatement expr
+                         ; returnWithPosition $ ExpressionStatement expr
                          }
 
     compound_stmt = do { vars <- many var_declaration
                        ; stmts <- many statement
-                       ; return $ CompoundStatement vars stmts
+                       ; returnWithPosition $ CompoundStatement vars stmts
                        }
 
     selection_stmt = do { reserved "if"
                         ; condExpr <- parens expression
                         ; thenClause <- statement
                         ; elseClause <- else_clause
-                        ; return $ SelectionStatement condExpr
-                                                      thenClause
-                                                      elseClause
+                        ; returnWithPosition $ SelectionStatement condExpr
+                                                                  thenClause
+                                                                  elseClause
                         }
         where else_clause = do { reserved "else"
                                ; stmt <- statement
                                ; return stmt
                                }
-                        <|> return NullStatement
+                        <|> returnWithPosition NullStatement
 
     iteration_stmt = do { reserved "while"
                         ; condExpr <- parens expression
                         ; body <- statement
-                        ; return $ IterationStatement condExpr body
+                        ; returnWithPosition $ IterationStatement condExpr body
                         }
 
     return_stmt = do { reserved "return"
                      ; x <- return_value
                      ; return x
                      }
-        where return_value = (semi >> return ReturnStatement)
+        where return_value = (semi >> returnWithPosition ReturnStatement)
                          <|> do { expr <- simple_expression
                                 ; semi
-                                ; return $ ValueReturnStatement expr
+                                ; returnWithPosition $ ValueReturnStatement expr
                                 } 
               
 
     expression = try (do { ident <- lvalue
                          ; reservedOp "="
                          ; value <- simple_expression
-                         ; return $ AssignmentExpr ident value                   
+                         ; return $ AssignmentExpr ident value
                          })
              <|> simple_expression
 
@@ -130,12 +139,12 @@ module Compiler.Parser where
 
 
     simple_expression = buildExpressionParser table factor
-        where table = [[op ">=" (ArithmeticExpr GreaterOrEqual) AssocLeft,
-                        op ">"  (ArithmeticExpr Greater)        AssocLeft,
-                        op "<=" (ArithmeticExpr LessOrEqual)    AssocLeft,
-                        op "<"  (ArithmeticExpr Less)           AssocLeft,
-                        op "==" (ArithmeticExpr Equal)          AssocLeft,
-                        op "!=" (ArithmeticExpr NotEqual)       AssocLeft],
+        where table = [[op ">=" (ArithmeticExpr GreaterOrEqual) AssocNone,
+                        op ">"  (ArithmeticExpr Greater)        AssocNone,
+                        op "<=" (ArithmeticExpr LessOrEqual)    AssocNone,
+                        op "<"  (ArithmeticExpr Less)           AssocNone,
+                        op "==" (ArithmeticExpr Equal)          AssocNone,
+                        op "!=" (ArithmeticExpr NotEqual)       AssocNone],
 
                        [op "*"  (ArithmeticExpr Multiply)       AssocLeft,
                         op "/"  (ArithmeticExpr Divide)         AssocLeft],
@@ -147,9 +156,8 @@ module Compiler.Parser where
     factor  = (parens simple_expression)
               <|> value_expression
 
-    value_expression = do { val <- value
-                          ; return $ ValueExpr val
-                          }
+    value_expression = do val <- value
+                          return $ ValueExpr val
 
     value = do { num <- integer; return $ IntValue num }
         <|> do { ident <- identifier
