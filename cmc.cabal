@@ -13,7 +13,9 @@ Category:       Compiler
 Extra-Source-Files: Makefile,
                     README,
                     doc/report1.pdf,
-                    doc/report1.tex
+                    doc/report1.tex,
+                    doc/report2.pdf,
+                    doc/report2.tex
 Build-Type:     Simple
 
 Executable cm-test
