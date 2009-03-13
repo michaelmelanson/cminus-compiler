@@ -1,0 +1,18 @@
+/* -*- c -*-
+
+   The "foo" function here is called with mismatched arguments
+
+ */
+
+void foo(int a[], int b)
+{
+
+}
+
+void main(void)
+{
+    int x[10];
+    int y[10];
+
+    foo(x,y);
+}

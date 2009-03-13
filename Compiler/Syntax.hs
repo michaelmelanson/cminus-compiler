@@ -5,13 +5,20 @@ module Compiler.Syntax where
     import Data.Maybe
     import Text.ParserCombinators.Parsec
 
+    import Debug.Trace
+
 
     data CompileError = TypeError SourcePos String
+                      | DupeError (Positioned Symbol) (Positioned Symbol)
                         deriving (Eq)
 
     instance Show CompileError where
         show (TypeError pos message) = "Type error at " ++ show pos ++ ": " ++ message
-
+        show (DupeError (Positioned oldPos old)
+                        (Positioned newPos new)) =
+                 "Duplicate symbol: " ++
+                 "\n\t" ++ show (nameOf old) ++ " defined at " ++ (show oldPos) ++
+                 "\n\t" ++ show (nameOf new) ++ " defined at " ++ (show newPos)
 
     data Type = Int
               | Array Type Integer
@@ -162,14 +169,21 @@ module Compiler.Syntax where
             | indexType /= Left Int    = Right (TypeError pos "array subscript must be an integer")
             | outOfBounds indexExpr    = Right (TypeError pos "array subscript out of range")
 
-            -- Must be good
+            -- I guess it's good
             | otherwise                = Left varType
-            where indexType                  = typeOf pos symbols indexExpr
-                  var                        = fromJust $ M.lookup name symbols
+            where indexType   = typeOf pos symbols indexExpr
+                  var         = fromJust $ M.lookup name symbols
                   typeOfArray = typeOf pos symbols var
-                  Left (Array varType arrayLen) = typeOfArray
 
-                  outOfBounds (ValueExpr (IntValue n)) | n >= arrayLen = True
+                  bounded = case typeOfArray of
+                              Left (Array t n) -> True
+                              Left _ -> False
+
+                  (varType, arrayLen) = case typeOfArray of
+                                          Left (Pointer t) -> (t, undefined)
+                                          Left (Array t n) -> (t, n)
+
+                  outOfBounds (ValueExpr (IntValue n)) | bounded && n >= arrayLen = True
                                                        | n < 0         = True
                                                        | otherwise     = False
                   outOfBounds _ = False
@@ -183,20 +197,68 @@ module Compiler.Syntax where
             | M.notMember name symbols = Right (TypeError pos ("undefined function " ++ show name))
             | otherwise = typeOf pos symbols (fromJust $ M.lookup name symbols)
 
+    validateArgs table (Positioned pos (FuncSymbol (Function _ _ args _))) params = 
+        let pairs = zip args params
+
+            validateArg (Positioned _ (Variable t _), param) =
+                case typeOf pos table param of
+                  Right error -> Just [error]
+                  Left paramType -> case coerce table pos t paramType of
+                                      Left _ -> Nothing
+                                      Right error -> Just [error]
+
+        in listToMaybe $ mapMaybe validateArg pairs
+
+    isFunction :: String -> M.Map String (Positioned Symbol) -> Bool
+    isFunction name table = 
+        case M.lookup name table of
+          Just (Positioned _ (FuncSymbol _)) -> True
+          _ -> False
+
+    isVariable name table = 
+        case M.lookup name table of
+          Just (Positioned _ (VarSymbol _)) -> True
+          _ -> False
+
+
+    coerce _ pos t1 t2 = case t1 == t2 of
+                       True -> Left t1
+                       False -> Right (TypeError pos ("mismatched types:"
+                                                      ++ "\n\tleft hand side is of type " ++ show t1
+                                                      ++ "\n\tright hand side is of type " ++ show t2))
+
+    validateValue _   _       (IntValue _) = Nothing
+
+    validateValue pos symbols (VariableRef name) | M.notMember name symbols = Just [TypeError pos (show name ++ " is not defined")]
+                                                 | not (isVariable name symbols) = Just [TypeError pos (show name ++ " is not a variable")]
+                                                 | otherwise = Nothing
+
+    validateValue pos symbols (ArrayRef name sub) | M.notMember name symbols = Just [TypeError pos (show name ++ " is not defined")]
+                                                  | not (isVariable name symbols) = Just [TypeError pos (show name ++ " is not an array")]
+                                                  | otherwise = Nothing
+
+    validateValue pos symbols (FunctionCall name args) | M.notMember name symbols      = Just [TypeError pos ("undefined function "          ++ show name)]
+                                                       | not (isFunction name symbols) = Just [TypeError pos ("attempt to call non-function" ++ show name)]
+                                                       | otherwise =
+                       case validateArgs symbols sym args of
+                         Just errors -> Just [TypeError pos ("argument mismatch: " ++ (concat $ map show errors))]
+                         Nothing     -> Nothing
+        where Just sym@(Positioned _ (FuncSymbol (Function returnType _ _ _))) = M.lookup name symbols
+              
 
     instance Typeable Expression where
         -- |The type of a value expression is the type of its value
-        typeOf pos symbols (ValueExpr v) = typeOf pos symbols v
+        typeOf pos symbols (ValueExpr v) = 
+            case validateValue pos symbols v of
+              Just errors -> Right (TypeError pos ("invalid value: " ++ (concat$ map show errors)))
+              Nothing -> typeOf pos symbols v
 
         -- |An arithmetic expression is the same type as its subexpressions
         typeOf pos symbols (ArithmeticExpr _ lhs rhs) =
             let lefttype  = typeOf pos symbols lhs
                 righttype = typeOf pos symbols rhs
             in case (lefttype, righttype) of
-                 (Left t1, Left t2) | t1 == t2 -> Left t1
-                                    | otherwise -> Right (TypeError pos ("mismatched types in arithmetic expression:"
-                                                                         ++ "\n\tleft hand side " ++ show lhs ++ " is of type " ++ show t1
-                                                                         ++ "\n\tright hand side " ++ show rhs  ++ "is of type " ++ show t2))
+                 (Left t1, Left t2) -> coerce symbols pos t1 t2
                  (Left _,  Right e) -> Right e
                  (Right e, _)       -> Right e
 
@@ -205,9 +267,6 @@ module Compiler.Syntax where
             let lefttype  = typeOf pos symbols lhs
                 righttype = typeOf pos symbols rhs
             in case (lefttype, righttype) of
-                 (Left t1, Left t2) | t1 == t2 -> Left t1
-                                    | otherwise -> Right (TypeError pos ("mismatched types in assignment:"
-                                                                         ++ "\n\tleft hand side " ++ show lhs ++ " is of type " ++ show t1
-                                                                         ++ "\n\tright hand side " ++ show rhs  ++ "is of type " ++ show t2))
+                 (Left t1, Left t2) -> coerce symbols pos t1 t2
                  (Left _,  Right e) -> Right e
                  (Right e, _)       -> Right e

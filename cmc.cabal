@@ -1,7 +1,7 @@
 Name:           cmc
-Version:        0.1
+Version:        2
 Cabal-Version:  >= 1.2
-License:        BSD4
+License:        BSD3
 License-File:   LICENSE
 Copyright:      (c) Michael Melanson 2009
 Synopsis:       Compiler for the C-Minus language
@@ -37,4 +37,4 @@ Executable cm
         Build-Depends:  haskell98,
                         haskell-src >= 1.0.1,
                         containers >= 0.2
-        GHC-Options:    -prof -auto-all
+        GHC-Options:    -auto-all

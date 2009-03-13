@@ -1,0 +1,10 @@
+/* -*- c -*-
+
+   The "foo" function here has two arguments named "a".
+
+ */
+
+void foo(int a, int a)
+{
+
+}

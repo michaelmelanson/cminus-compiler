@@ -148,7 +148,18 @@ module Main where
          (ValueExpr 
           (FunctionCall "foo"
            [ValueExpr (IntValue 2),
-            ValueExpr (IntValue 3)]))])])]
+            ValueExpr (IntValue 3)]))])]),
+
+     ("int x[10]; int minloc(int a[], int low, int high) { int e; int f; int g; }",
+      [AnyPosition $ VarSymbol $ Variable (Array Int 10) "x",
+       (AnyPosition $ FuncSymbol $ Function Int "a"
+        [AnyPosition $ Variable (Pointer Int) "b",
+         AnyPosition $ Variable Int "c",
+         AnyPosition $ Variable Int "d"]
+        (AnyPosition $ CompoundStatement
+         [AnyPosition $ Variable Int "e",
+          AnyPosition $ Variable Int "f",
+          AnyPosition $ Variable Int "g"] []))])]
 
 
     executeTests xs = map execute xs
