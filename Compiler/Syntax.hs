@@ -19,24 +19,24 @@ module Compiler.Syntax where
               | Void
                 deriving (Show, Eq)
 
-    data Value      = IntValue Integer    -- ^A literal integer value
-                    | VariableRef String  -- ^A reference to an integer variable
-                    | ArrayRef String Expression -- ^A reference to an index of an array
-                    | FunctionCall String [Expression] -- ^A function call
-                      deriving (Show, Eq)
+    data Value = IntValue Integer                 -- ^A literal integer value
+               | VariableRef String               -- ^A reference to an integer variable
+               | ArrayRef String Expression       -- ^A reference to an index of an array
+               | FunctionCall String [Expression] -- ^A function call
+                 deriving (Show, Eq)
 
     -- |A C-Minus operator. Each of these should be fairly self-explanatory
-    data Operator   = Add
-                    | Subtract
-                    | Multiply
-                    | Divide
-                    | LessOrEqual
-                    | Less
-                    | GreaterOrEqual
-                    | Greater
-                    | Equal
-                    | NotEqual
-                      deriving (Show, Eq)
+    data Operator = Add
+                  | Subtract
+                  | Multiply
+                  | Divide
+                  | LessOrEqual
+                  | Less
+                  | GreaterOrEqual
+                  | Greater
+                  | Equal
+                  | NotEqual
+                    deriving (Show, Eq)
 
     data Program = Program [Positioned Symbol]
                    deriving (Show)
