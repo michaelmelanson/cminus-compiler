@@ -33,3 +33,4 @@ module Compiler.Scanner where
     commaSep1   = P.commaSep1 scanner
     typeSpec    = (reserved "int" >> return Int)
               <|> (reserved "void" >> return Void)
+              <?> "type"

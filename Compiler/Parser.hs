@@ -18,33 +18,31 @@ module Compiler.Parser where
                  }
 
     -- |Parser for one top-level declaration (either a global variable or a function)
-    toplevel_decl = (try function_declaration) <|> (try global_variable)
+    toplevel_decl = function_declaration <|> global_variable
 
-    function_declaration = do { t <- typeSpec
-                              ; id <- identifier
-                              ; args <- parens params
-                                        <?> "function arguments"
+    function_declaration = try (do t <- typeSpec
+                                   id <- identifier
+                                   args <- parens params
+                                           <?> "function arguments"
                                             
-                              ; body <- braces compound_stmt
-                                        <?> "function body"
+                                   body <- braces compound_stmt
+                                           <?> "function body"
                                             
-                              ; returnWithPosition $ FuncSymbol $ Function t id args body
-                              }
+                                   returnWithPosition $ FuncSymbol $ Function t id args body)
                            <?> "function declaration"
 
-    global_variable = try (do { t <- typeSpec
-                              ; id <- identifier
-                              ; size <- squares (integer <?> "array size")
-                                        <?> "array bounds"
-                              ; semi
-                              ; returnWithPosition $ VarSymbol $ Variable (Array t size) id
-                              })
+    global_variable = try (do t <- typeSpec
+                              id <- identifier
+                              size <- squares (integer <?> "array size")
+                                      <?> "array bounds"
+                              semi
+                              returnWithPosition $ VarSymbol $ Variable (Array t size) id)
                       <|>
-                      do { t <- typeSpec
-                         ; id <- identifier
-                         ; semi
-                         ; returnWithPosition $ VarSymbol $ Variable t id
-                         }
+                      try (do t <- typeSpec
+                              id <- identifier
+                              semi
+                              returnWithPosition $ VarSymbol $ Variable t id)
+                         
                       <?> "global variable"
 
     var_declaration = do { p <- param
@@ -53,71 +51,70 @@ module Compiler.Parser where
                          }
            
 
-    param = do { t <- typeSpec
-               ; id <- identifier
-               ; x <- maybeArrayLen t id
-               ; returnWithPosition x
-               }
-        where maybeArrayLen t id = do { squares whiteSpace <?> "array bounds"
-                                      ; return $ Variable (Pointer t) id
-                                      }
-                               <|> do { size <- squares integer <?> "array bounds"
-                                      ; return $ Variable (Array t size) id
-                                      }
-                               <|> (return $ Variable t id)
+    param = try (do t <- typeSpec
+                    id <- identifier
+                    size <- squares (integer <?> "array size")
+                            <?> "array bounds"
+                    returnWithPosition $ Variable (Array t size) id)
+            <|>
+            try (do t <- typeSpec
+                    id <- identifier
+                    squares whiteSpace
+                    returnWithPosition $ Variable (Pointer t) id)
+            <|>
+            try (do t <- typeSpec
+                    id <- identifier
+                    returnWithPosition $ Variable t id)
+
 
     params = (reserved "void" >> return []) <|> commaSep1 param
 
-    statement = do { var_declaration
-                   ; unexpected "variable declaration (variables must be declared before any statements)"
-                   }
-            <|> return_stmt
-            <|> braces compound_stmt
-            <|> selection_stmt
-            <|> iteration_stmt
-            <|> expression_stmt
-            <?> "statement"
+    statement = do var_declaration
+                   unexpected "variable declaration (variables must be declared before any statements)"
 
-    expression_stmt = do { expr <- expression
-                         ; semi
-                         ; returnWithPosition $ ExpressionStatement expr
-                         }
+                <|> return_stmt
+                <|> braces compound_stmt
+                <|> selection_stmt
+                <|> iteration_stmt
+                <|> expression_stmt
+                <?> "statement"
 
-    compound_stmt = do { vars <- many var_declaration
-                       ; stmts <- many statement
-                       ; returnWithPosition $ CompoundStatement vars stmts
-                       }
+    expression_stmt = do expr <- expression
+                         semi
+                         returnWithPosition $ ExpressionStatement expr
 
-    selection_stmt = do { reserved "if"
-                        ; condExpr <- parens expression
-                        ; thenClause <- statement
-                        ; elseClause <- else_clause
-                        ; returnWithPosition $ SelectionStatement condExpr
-                                                                  thenClause
-                                                                  elseClause
-                        }
-        where else_clause = do { reserved "else"
-                               ; stmt <- statement
-                               ; return stmt
-                               }
+    compound_stmt = do vars  <- many (var_declaration <?> "local variable")
+                       stmts <- many statement
+                       returnWithPosition $ CompoundStatement vars stmts
+
+
+    selection_stmt = do reserved "if"
+                        condExpr   <- parens expression
+                        thenClause <- statement
+                        elseClause <- else_clause
+                        returnWithPosition $ SelectionStatement condExpr
+                                                                thenClause
+                                                                elseClause
+
+        where else_clause = do reserved "else"
+                               stmt <- statement
+                               return stmt
+
                         <|> returnWithPosition NullStatement
 
-    iteration_stmt = do { reserved "while"
-                        ; condExpr <- parens expression
-                        ; body <- statement
-                        ; returnWithPosition $ IterationStatement condExpr body
-                        }
+    iteration_stmt = do reserved "while"
+                        condExpr <- parens expression
+                        body <- statement
+                        returnWithPosition $ IterationStatement condExpr body
 
-    return_stmt = do { reserved "return"
-                     ; x <- return_value
-                     ; return x
-                     }
+    return_stmt = do reserved "return"
+                     x <- return_value
+                     return x
+
         where return_value = (semi >> returnWithPosition ReturnStatement)
-                         <|> do { expr <- simple_expression
-                                ; semi
-                                ; returnWithPosition $ ValueReturnStatement expr
-                                } 
-              
+                         <|> do expr <- simple_expression
+                                semi
+                                returnWithPosition $ ValueReturnStatement expr
 
     expression = try (do { ident <- lvalue
                          ; reservedOp "="

@@ -101,7 +101,7 @@ module Compiler.Syntax where
                       | AnyPosition a
 
     instance Show a => Show (Positioned a) where
-        show (Positioned pos a) = show pos ++ show a
+        show (Positioned _ a) = show a
 
     instance Eq a => Eq (Positioned a) where
         (Positioned _ x) == (Positioned _ y) = x == y

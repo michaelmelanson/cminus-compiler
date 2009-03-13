@@ -116,17 +116,29 @@ module Main where
      ("int a[10];",
       [AnyPosition $ VarSymbol (Variable (Array Int 10) "a")]),
 
+     ("int a(int x) {}",
+      [AnyPosition $ FuncSymbol $ Function Int "a" [AnyPosition $ Variable Int "x"]
+       (AnyPosition $ CompoundStatement [] [])]),
+
 
      ("int a(int x[]) {}",
       [AnyPosition $ FuncSymbol $ Function Int "a" [AnyPosition $ Variable (Pointer Int) "x"]
+       (AnyPosition $ CompoundStatement [] [])]),
+
+     ("int a(int x[10]) {}",
+      [AnyPosition $ FuncSymbol $ Function Int "a" [AnyPosition $ Variable (Array Int 10) "x"]
        (AnyPosition $ CompoundStatement [] [])]),
 
      ("void main(void) {}",
       [AnyPosition $ FuncSymbol $ Function Void "main" []
        (AnyPosition $ CompoundStatement [] [])]),
 
+     ("void main(void) { int a; }",
+      [AnyPosition $ FuncSymbol $ Function Void "main" []
+       (AnyPosition $ CompoundStatement [AnyPosition $ Variable Int "a"] [])]),
+
      ("void main(void) { int a[10]; }",
-      [AnyPosition $ FuncSymbol $ Function Int "main" []
+      [AnyPosition $ FuncSymbol $ Function Void "main" []
        (AnyPosition $ CompoundStatement [AnyPosition $ Variable (Array Int 10) "a"] [])]),
 
      ("void main(void) { foo(2,3); }",
