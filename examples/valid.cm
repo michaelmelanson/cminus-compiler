@@ -1,0 +1,13 @@
+/* -*- c -*-
+
+   Can't assign an array to an integer
+ 
+ */
+
+int a[1];
+
+int main(void)
+{
+    int b;
+    b = a[0];
+}
