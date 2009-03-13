@@ -84,7 +84,7 @@ terminate.
 \section{Implementation notes}
 \label{implementation}
 
-Like for Checkpoint~1, the code for this checkpoint is written in
+As with Checkpoint~1, the code for this checkpoint is written in
 Haskell, using the Parsec library to generate parsing tables. This
 checkpoint is considerably longer than the last, at approximately 820
 lines total, compared to 300 for the first checkpoint.
@@ -98,11 +98,18 @@ class\footnote{In Haskell, a type class is somewhat like a mixture of
   those instances to define the implementation of the
   features.}. Adding this information as a type class rather than as a
 member of each of the datatypes allowed me to avoid significantly
-altering the abstract data type.
+altering the abstract data type. 
 
-Two other type classes were also added, one called \verb|Nameable| and
-one called \verb|Typeable|. These define the polymorphic \verb|typeOf|
-and \verb|nameOf| methods used throughout the type checking code.
+Most of the changes consisted of replacing calls to the function
+\verb|return| in many of the parser combinators in \verb|Parser.hs|
+with calls to \verb|returnWithPosition|. This function adds
+positioning information to any value of types for which the
+\verb|Positioned| type class is instanced unto.
+
+Two other type classes were also added, called \verb|Nameable| and
+\verb|Typeable|. These define the polymorphic \verb|typeOf| and
+\verb|nameOf| methods respectively which are used throughout the type
+checking code.
 
 \section{Limitations}
 The lack of error recovery mentioned in the Checkpoint~1 report is
