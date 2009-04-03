@@ -16,14 +16,7 @@ module Compiler.CodeGeneration.InstructionSet where
 
     type Block = [Instruction]
 
-    data Instruction = LABEL String -- ^A pseudo-instruction for marking positions
-                                    --  in instruction lists
-
-                     | SYMBOL String -- ^A pseudo-instruction that
-                                     -- defines a symbol's address
-
-                     -- ^Well, what do you think it is? :)
-                     | COMMENT String
+    data Instruction = COMMENT String -- |Well, what do you think this is? :)
 
                      -- The RO instructions
                      | HALT
@@ -68,8 +61,6 @@ module Compiler.CodeGeneration.InstructionSet where
         show (JEQ r a)      = showRM "JEQ"  r a
         show (JNE r a)      = showRM "JNE"  r a
 
-        show (LABEL   name) = "* label: "  ++ show name
-        show (SYMBOL  name) = "* symbol: " ++ show name
         show (COMMENT c)    = "* " ++ c
 
     showRO op x y z = op     ++ " " ++ 
@@ -99,9 +90,4 @@ module Compiler.CodeGeneration.InstructionSet where
 
 
     isComment (COMMENT _) = True
-
--- Remove these two:
-    isComment (LABEL _) = True
-    isComment (SYMBOL _) = True
-
     isComment _           = False
