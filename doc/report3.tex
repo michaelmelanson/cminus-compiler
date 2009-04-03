@@ -1,0 +1,142 @@
+\documentclass[12pt]{amsart}
+\usepackage{fullpage}
+
+\title{CIS*4650 Checkpoint 3 report}
+\author{Michael Melanson}
+
+\begin{document}
+\maketitle
+
+\section{Summary}
+The goal of this checkpoint was to add code generation to the C-Minus
+parser and type checker written for Checkpoints 1 and 2. It should
+check for the same errors as in Checkpoint 2, but when there are no
+errors, produce assembly code for the TM machine which implements the
+program.
+
+\section{Building and running}
+
+\subsection{Dependencies}
+As described in Section~\ref{implementation}, the enclosed compiler
+written in Haskell. Since a Haskell compiler is not standard on most
+operating systems, the \verb|ghc| (Glasgow Haskell Compiler) package
+may need to be installed. In addition, the Parsec ``parser combinator
+library'' is required.
+
+On Ubuntu or Debian, this can be done by running:
+\begin{verse}
+\verb|sudo apt-get install ghc haskell-parsec|
+\end{verse}
+
+On Fedora, CentOS, or other RPM-based distributions, this can be done
+by running\footnote{I do not have access to such a system, so this is
+  an educated guess; my understanding is that Parsec is included with
+  GHC.}:
+\begin{verse}
+\verb|sudo yum install ghc|
+\end{verse}
+
+Other operating systems will have similar installation procedures.
+
+\subsection{Building}
+Internally, the Haskell build system Cabal is used to automate
+building and packaging of the code. However, as per the assigment
+specification, a Makefile has been included; this Makefile simply
+invokes Cabal. The Makefile includes the following rules:
+
+\begin{description}
+\item[all] The default rule; invokes \emph{configure} then
+  \emph{build}. 
+\item[configure] Checks dependencies, prepares the \verb|dist| directory.
+\item[build] Compiles and links the executable files.
+\item[clean] Removes all generated files.
+\item[docs] Generates source documentation (may require the additional
+  \verb|haddock| package to be installed)
+\end{description}
+
+To compile the program, run \verb|make|. This produces two targets:
+\verb|cm| and \verb|cm-test|, which are placed in their respective
+directories in \verb|dist/build|. The \verb|cm-test| target, when
+executed, runs a set of smoke tests against the compiler code. The
+purpose of these tests is to verify that the compiler is not seriously
+broken. They check that the basic program structures are parsed
+correctly, and are fairly complete although not exhaustive. The main
+interface to the compiler, however, is through the \verb|cm|
+target. Its usage is detailed below.
+
+\subsection{Invocation}
+The compiler binary will be put in \verb|dist/build/cm/cm|. It
+requires one of three flags, followed by a file path:
+
+\begin{description}
+\item[-a] Show the parsed abstract syntax tree.
+\item[-s] Show symbol table contents
+\item[-c] Compile the program, producing assembly output if there are
+  no errors
+\end{description}
+
+There are also long forms of these flags, as explained if instead the
+\verb|cm| binary is run with the \verb|--help| flag. If given any
+other combination of arguments, it will print usage information and
+terminate.
+
+
+\section{Implementation notes}
+\label{implementation}
+
+Code generation is implemented using a recursive, nested block-based
+method. Local variable scope, stack use and labels are isolated by
+pushing and popping ``compilation blocks'' from the compiler state
+monad. Register allocation is not isolated, although it probably
+should be.
+
+Within a compilation block, compilation produces an intermediate code
+that is the same as TM code except that some instructions include
+unresolved symbol and label references as memory arguments. When a
+block is complete, it is ``finalized'', at which time its labels and
+symbols are resolved to relative addresses and the resulting
+instructions are appended to the parent's scope.
+
+A compilation block can return a value (through a register, which is
+allocated in the parent block at the end of the child block).
+
+\section{Limitations}
+
+\subsection{Error recovery}
+The lack of error recovery mentioned in the Checkpoint 1 and 2 reports
+is still true for this checkpoint. However, multiple type errors are
+reported when possible. Code generation does not produce any further
+error conditions.
+
+\subsection{Reachability analysis}
+Code reachability analysis is not implemented. This means that the
+compiler will often generate unreachable code, or not detect cases
+where execution may exit a function without a \texttt{return}
+statement. To avoid invalid output, the programmer should ensure that
+every function ends with a return statement on all code paths. Return
+statements are \emph{not} automatically added at the end of function
+bodies.
+
+\subsection{Register allocation}
+Registers are allocated in a simple algorithm I call ``penny tray''
+allocation, by analogy to penny trays in convenience stores, as in:
+\begin{quote}
+  ``{\it Need a register? Take a register. Have a register? Leave a
+  register}''
+\end{quote}
+
+That is, available registers exist in a pool, and may be claimed
+from that pool for use, and must be returned when no longer used. 
+
+Memory spilling is not implemented. This means that large, complicated
+algebraic expressions, especially those involving array accesses, may
+exhaust all available registers. Expression evaluation is also rather
+register-hungry, despite releasing registers as soon as
+possible. Unlike in example code, expression evaluation is done
+completely within registers; stack temporaries are not used.
+
+If the system's registers are exhausted, the compiler will complain
+about the lack of registers and terminate.
+
+
+\end{document}
