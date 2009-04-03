@@ -30,7 +30,7 @@ Executable cm-test
 
 
 Executable cm
-        Main-Is:        TypeCheck.hs
+        Main-Is:        Compile.hs
         Other-Modules:  Compiler.Parser,
                         Compiler.Scanner,
                         Compiler.Syntax,
@@ -38,5 +38,6 @@ Executable cm
                         IPPrint
         Build-Depends:  haskell98,
                         haskell-src >= 1.0.1,
-                        containers >= 0.2
+                        containers >= 0.2,
+                        mtl >= 1.1
         GHC-Options:    -auto-all

@@ -1,15 +1,17 @@
 -- |The parser for the C-Minus compiler. This converts the token
 --  stream produced by Compiler.Scanner into an abstract syntax tree.
 
-module Compiler.Parser where
-    import Compiler.Syntax
-    import Compiler.Scanner
+module Compiler.Parser(program) where
+    import Monad
 
     import Text.ParserCombinators.Parsec 
     import Text.ParserCombinators.Parsec.Prim
     import Text.ParserCombinators.Parsec.Expr hiding (Operator)
 
-    import Monad
+    import Compiler.Syntax
+    import Compiler.Scanner
+    import Compiler.Positioned
+
 
     -- |The top parser. This parses an entire C-Minus source file
     program = do { whiteSpace
@@ -28,7 +30,7 @@ module Compiler.Parser where
                                    body <- braces compound_stmt
                                            <?> "function body"
                                             
-                                   returnWithPosition $ FuncSymbol $ Function t id args body)
+                                   returnWithPosition $ FuncSymbol Unknown $ Function t id args body)
                            <?> "function declaration"
 
     global_variable = try (do t <- typeSpec
@@ -36,12 +38,12 @@ module Compiler.Parser where
                               size <- squares (integer <?> "array size")
                                       <?> "array bounds"
                               semi
-                              returnWithPosition $ VarSymbol $ Variable (Array t size) id)
+                              returnWithPosition $ VarSymbol Unknown (Variable (Array t (fromInteger size)) id))
                       <|>
                       try (do t <- typeSpec
                               id <- identifier
                               semi
-                              returnWithPosition $ VarSymbol $ Variable t id)
+                              returnWithPosition $ VarSymbol Unknown (Variable t id))
                          
                       <?> "global variable"
 
@@ -55,7 +57,7 @@ module Compiler.Parser where
                     id <- identifier
                     size <- squares (integer <?> "array size")
                             <?> "array bounds"
-                    returnWithPosition $ Variable (Array t size) id)
+                    returnWithPosition $ Variable (Array t (fromInteger size)) id)
             <|>
             try (do t <- typeSpec
                     id <- identifier
@@ -156,7 +158,7 @@ module Compiler.Parser where
     value_expression = do val <- value
                           return $ ValueExpr val
 
-    value = do { num <- integer; return $ IntValue num }
+    value = do { num <- integer; return $ IntValue (fromInteger num) }
         <|> do { ident <- identifier
                ; x <- variableOrCall ident
                ; return x

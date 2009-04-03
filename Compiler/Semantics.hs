@@ -1,54 +1,59 @@
 {-# OPTIONS -fglasgow-exts #-}
 
 module Compiler.Semantics where
-    import Data.Map (Map, union, empty, insert, member)
-    import qualified Data.Map as M
     import Text.ParserCombinators.Parsec
+    import Data.Either
+
     import Compiler.Syntax
+    import Compiler.CompileError
+    import Compiler.SymbolTable
+    import Compiler.TypeChecking.Nameable
+    import Compiler.TypeChecking.Typeable
 
     dupeToError (old, new) = DupeError old new
 
-    programTypeErrors p@(Program syms) = dupeErrors ++ (concat $ map (funcTypeErrors table) funcs)
+    programTypeErrors p@(Program syms) =
+        dupeErrors ++ (concat $ map (funcTypeErrors table) funcs)
         where dupeErrors = map dupeToError (findDuplicates syms)
-              table = toSymbolTable syms
+              table = toSymbolTable syms `mergeSymbolTables` initSymbolTable
               funcs = globalFuncs p
 
     globalFuncs :: Program -> [Positioned Function]
     globalFuncs (Program syms) = map symbolToFunc $ filter isFunction syms
-        where isFunction (Positioned _ (FuncSymbol _)) = True
+        where isFunction (Positioned _ (FuncSymbol _ _)) = True
               isFunction _ = False
 
-              symbolToFunc (Positioned pos (FuncSymbol f)) = Positioned pos f
+              symbolToFunc (Positioned pos (FuncSymbol _ f)) = Positioned pos f
 
-    globalTable (Program p) = toSymbolTable p
-    -- localTable program function = 
+    funcTypeErrors globals (Positioned _
+                            (Function _ _ args
+                                      body@(Positioned _
+                                            (CompoundStatement locals _)))) =
+                          dupeErrors ++ stmtTypeErrors table body
 
-    functionSymbols :: Function -> [Positioned Symbol]
-    functionSymbols (Function _ _ args (Positioned _ (CompoundStatement locals _))) =
-        map symbolize (args ++ locals)
-
-    toSymbolTable :: [Positioned Symbol] -> Map String (Positioned Symbol)
-    toSymbolTable syms = foldl insertSymbol empty syms
-        where insertSymbol table s = insert (nameOf s) s table
-    
-    symbolize (Positioned pos arg) = Positioned pos (VarSymbol arg)
-
-    funcTypeErrors globals (Positioned _ (Function _ _ args body@(Positioned _ (CompoundStatement locals _)))) = dupeErrors ++ stmtTypeErrors table body
-        where dupeErrors = map dupeToError (findDuplicates (argSyms ++ map symbolize locals))
-              table = toSymbolTable argSyms `union` globals
-              argSyms = map symbolize args
+        where syms = argSyms ++ map symbolizePVar locals
+              dupeErrors = map dupeToError (findDuplicates syms)
+              
+              table = toSymbolTable argSyms `mergeSymbolTables` globals
+              argSyms = map symbolizePVar args
 
 
-    findDuplicates :: [Positioned Symbol] -> [(Positioned Symbol, Positioned Symbol)]
-    findDuplicates syms = dupes
-        where collectSyms (table, dupes) sym | member name table = (table, dupes ++ [(oldsym, sym)])
-                                             | otherwise = (M.insert name sym table, dupes)
+    collectSyms (table, dupes) sym | symbolDefined name table = 
+                          let dupes' = dupes ++ [(oldsym, sym)]
+                          in (table, dupes')
+
+                                   | otherwise = (insertSymbol table sym, dupes)
                   where name = nameOf sym
-                        Just oldsym = M.lookup name table
+                        oldsym = symbolLookup name table
 
-              (_, dupes) = foldl collectSyms (M.empty, []) syms
 
-    makeTable globalTable localSyms = toSymbolTable localSyms `union` globalTable
+    findDuplicates :: [Positioned Symbol] -> [(Positioned Symbol,
+                                               Positioned Symbol)]
+    findDuplicates syms = dupes
+        where (_, dupes) = foldl collectSyms (initSymbolTable, []) syms
+
+    makeTable globalTable localSyms =
+        toSymbolTable localSyms `mergeSymbolTables` globalTable
 
              
 
@@ -60,13 +65,24 @@ module Compiler.Semantics where
     stmtTypeErrors symbols (Positioned _ (CompoundStatement locals stmts)) =
         foldl (++) [] $ map (stmtTypeErrors localTable) stmts
 
-        where localSyms = map symbolize locals
+        where localSyms = map symbolizePVar locals
               localTable = makeTable symbols localSyms
 
-    stmtTypeErrors globals (Positioned pos (SelectionStatement e thenClause elseClause))
-        | typeOf pos globals e /= Left Int = [TypeError pos "the condition of a selection statement must evaluate to an integer"]
+    stmtTypeErrors globals (Positioned pos (SelectionStatement e
+                                                               thenClause
+                                                               elseClause))
+        | isRight t = case t of
+                        Right e -> [e]
+        | t /= Left Int =
+            let msg = "the condition of a selection statement must " ++
+                      "evaluate to an integer. This one evaluates to " ++
+                      show t
+            in [TypeError pos msg]
         | otherwise = stmtTypeErrors globals thenClause ++
                       stmtTypeErrors globals elseClause
+        where t = typeOf pos globals e
+              isRight (Right _) = True
+              isRight _ = False
 
     -- |Return statements can't make type errors
     stmtTypeErrors globals (Positioned pos ReturnStatement) = []
