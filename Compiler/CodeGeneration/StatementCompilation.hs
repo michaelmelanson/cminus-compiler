@@ -34,6 +34,22 @@ module Compiler.CodeGeneration.StatementCompilation where
                assign v t1
                freeRegister t1
 
+        compile (ExpressionStatement (AssignmentExpr (ArrayRef name indexExpr) rhs)) = 
+            do t1 <- evaluate indexExpr
+
+               r <- claimRegister
+               addr <- currentAddress
+               emit $ LDA r (SymbolRef addr name) -- Get array base
+               emit $ ADD r r t1 
+
+               freeRegister t1
+
+               t2 <- evaluate rhs
+               emit $ ST t2 (Memory 0 r)
+
+               freeRegister t2
+               freeRegister r
+
         compile (ExpressionStatement e) = do evaluate e
                                              return ()
 
