@@ -1,12 +1,13 @@
 Name:           cmc
-Version:        2.1
+Version:        3.0
 Cabal-Version:  >= 1.2
 License:        BSD3
 License-File:   LICENSE
 Copyright:      (c) Michael Melanson 2009
 Synopsis:       Compiler for the C-Minus language
 Description:    cmc is a compiler for the C-Minus language. Includes IPPrint
-                written by Gleb Alexeyev <gleb.alexeev@gmail.com>.
+                written by Gleb Alexeyev <gleb.alexeev@gmail.com> for
+                pretty-printing.
 Maintainer:     Michael Melanson <michael@michaelmelanson.net>
 Stability:      experimental
 Category:       Compiler
@@ -15,15 +16,31 @@ Extra-Source-Files: Makefile,
                     doc/report1.pdf,
                     doc/report1.tex,
                     doc/report2.pdf,
-                    doc/report2.tex
+                    doc/report2.tex,
+                    doc/report3.pdf,
+                    doc/report3.tex
 Build-Type:     Simple
 
 Executable cm-test
         Main-Is:        Tests.hs
-        Other-Modules:  Compiler.Parser,
+        Other-Modules:  Compiler.CodeGeneration.CompilationState,
+                        Compiler.CodeGeneration.ExpressionEvaluation,
+                        Compiler.CodeGeneration.InstructionSet,
+                        Compiler.CodeGeneration.LabelResolution,
+                        Compiler.CodeGeneration.LabelTable,
+                        Compiler.CodeGeneration.RegisterAllocation,
+                        Compiler.CodeGeneration.RuntimeEnvironment,
+                        Compiler.CodeGeneration.StatementCompilation,
+                        Compiler.CodeGeneration.SymbolResolution,
+                        Compiler.CompileError,
+                        Compiler.Parser,
+                        Compiler.Positioned,
                         Compiler.Scanner,
+                        Compiler.Semantics,
+                        Compiler.SymbolTable,
                         Compiler.Syntax,
-                        Compiler.Semantics
+                        Compiler.TypeChecking.Nameable,
+                        Compiler.TypeChecking.Typeable
         Build-Depends:  parsec >= 2.1,
                         containers >= 0.2,
                         base
@@ -31,10 +48,24 @@ Executable cm-test
 
 Executable cm
         Main-Is:        Compile.hs
-        Other-Modules:  Compiler.Parser,
+        Other-Modules:  Compiler.CodeGeneration.CompilationState,
+                        Compiler.CodeGeneration.ExpressionEvaluation,
+                        Compiler.CodeGeneration.InstructionSet,
+                        Compiler.CodeGeneration.LabelResolution,
+                        Compiler.CodeGeneration.LabelTable,
+                        Compiler.CodeGeneration.RegisterAllocation,
+                        Compiler.CodeGeneration.RuntimeEnvironment,
+                        Compiler.CodeGeneration.StatementCompilation,
+                        Compiler.CodeGeneration.SymbolResolution,
+                        Compiler.CompileError,
+                        Compiler.Parser,
+                        Compiler.Positioned,
                         Compiler.Scanner,
-                        Compiler.Syntax,
                         Compiler.Semantics,
+                        Compiler.SymbolTable,
+                        Compiler.Syntax,
+                        Compiler.TypeChecking.Nameable,
+                        Compiler.TypeChecking.Typeable,
                         IPPrint
         Build-Depends:  haskell98,
                         haskell-src >= 1.0.1,
