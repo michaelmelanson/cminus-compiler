@@ -16,7 +16,6 @@ module Compiler.CodeGeneration.ExpressionEvaluation(evaluate) where
            freeRegister t1
            freeRegister t2
 
-           emit $ OUT t3
            return t3
 
         where inst = operToInst op
