@@ -43,7 +43,7 @@ Executable cm-test
                         Compiler.TypeChecking.Typeable
         Build-Depends:  parsec >= 2.1,
                         containers >= 0.2,
-                        base
+                        haskell98
 
 
 Executable cm
@@ -67,7 +67,7 @@ Executable cm
                         Compiler.TypeChecking.Nameable,
                         Compiler.TypeChecking.Typeable,
                         IPPrint
-        Build-Depends:  base,
+        Build-Depends:  haskell98,
                         haskell-src >= 1.0.1,
                         containers >= 0.2,
                         mtl >= 1.1
