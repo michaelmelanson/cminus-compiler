@@ -67,7 +67,7 @@ Executable cm
                         Compiler.TypeChecking.Nameable,
                         Compiler.TypeChecking.Typeable,
                         IPPrint
-        Build-Depends:  haskell98,
+        Build-Depends:  base,
                         haskell-src >= 1.0.1,
                         containers >= 0.2,
                         mtl >= 1.1
